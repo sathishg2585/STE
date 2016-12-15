@@ -1,0 +1,10 @@
+
+@font-face {
+  font-family: 'Syfy-Regular';
+  src: url('Syfy-Regular.eot?#iefix') format('embedded-opentype'),
+  url('Syfy-Regular.woff') format('woff'),
+  url('Syfy-Regular.ttf')  format('truetype'),
+  url('Syfy-Regular.svg#Syfy-Regular') format('svg');
+  font-weight: normal;
+  font-style: normal;
+}

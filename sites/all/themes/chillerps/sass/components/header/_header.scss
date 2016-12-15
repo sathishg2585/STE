@@ -1,0 +1,70 @@
+.syfy-press-header-kits-menu {
+  ul {
+    background-color: $red;
+    font-family: $regular;
+  }
+}
+
+.syfy-press-header-wrapper {
+  .pane-syfy-press-logo {
+    .syfy-press-logo {
+      background-size: 112px 101px;
+      width: 112px;
+    }
+  }
+
+  .pane-node-field-press-kit-date-text {
+    font-family: $regular;
+    font-size: 16px;
+  }
+
+  .pane-node-field-press-kit-date-date {
+    @include triangle-topleft(15px);
+    font-family: $bold;
+    font-size: 38px;
+    line-height: 38px;
+    color: $red;
+    .field-name-field-press-kit-date-date {
+      color: $red !important;
+      .field-item {
+        margin-top: 5px;
+        margin-left: 16px;
+        sup {
+          margin-left: 4px;
+          top: -0.32em;
+          font-family: $regular;
+          font-size: 26px;
+        }
+      }
+    }
+  }
+}
+
+.syfy-press-header-main-menu {
+  .syfy-main-menu-list {
+    li {
+      a {
+        font-family: $medium;
+        color: white;
+        letter-spacing: 0.8px;
+      }
+
+      &.active:after {
+        @include translateX(-50%);
+      }
+    }
+  }
+}
+
+/*----------- Portable Fix For Header -------------*/
+@media #{$portable-only} {
+  .syfy-press-header-wrapper {
+    .pane-node-field-press-kit-date-text {
+      font-size: 12px;
+    }
+
+    .pane-node-field-press-kit-date-date {
+      font-size: 24px;
+    }
+  }
+}

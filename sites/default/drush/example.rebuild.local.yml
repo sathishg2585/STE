@@ -1,0 +1,15 @@
+# Drush Rebuild overrides. This file merges additions into rebuild.yml.
+#
+# Copy this file to rebuild.local.yml and override as needed. It will be Git
+# ignored.
+#
+# For more options
+# @see docroot/sites/all/drush/commands/rebuild/examples/example.rebuild.yaml
+
+drupal:
+  # Modules
+  modules:
+    enable:
+      - dblog
+    disable:
+    uninstall:

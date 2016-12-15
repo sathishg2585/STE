@@ -1,0 +1,77 @@
+.syfy-press-content-wrapper {
+  .view-syfy-contacts-view {
+    > .view-content {
+      overflow: hidden;
+    }
+
+    .syfy-contacts-row {
+      float: left;
+      display: inline-block;
+      width: 28.5%;
+      min-height: 127px;
+      padding: 4.15% 2.85% 4.15% 0;;
+      margin-bottom: 5%;
+
+      &:nth-child(3n + 4) {
+        clear: left;
+      }
+
+      &:nth-child(3n + 2),
+      &:nth-child(3n + 3) {
+        border-left: 1px solid $gray_font_menu;
+        padding-left: 2.85%;
+      }
+
+      .views-field-field-contact-name {
+        margin-bottom: 35px;
+
+        h2 {
+          color: $gray_font_content;
+          font-size: 18px;
+          line-height: 20px;
+          font-family: 'Syfy-Bold';
+          margin: 0;
+        }
+      }
+
+      div {
+        color: $gray_font_content;
+        font-size: 16px;
+      }
+
+      a {
+        font-family: 'Syfy-Bold';
+        color: $purple_content_button;
+        text-decoration: none;
+
+        &:hover {
+          color: $purple_content_button;
+        }
+      }
+    }
+  }
+}
+
+/*----------- Tablets -------------*/
+@media #{$portable-only} {
+  .syfy-press-content-wrapper {
+    .view-syfy-contacts-view {
+      .syfy-contacts-row {
+        width: 45%;
+
+        &:nth-child(odd) {
+          border: none;
+          clear: left;
+          padding-left: 0;
+        }
+
+        &:nth-child(even) {
+          border-left: 1px solid $gray_font_menu;
+          clear: none;
+          padding-left: 2.85%;
+        }
+      }
+    }
+  }
+}
+

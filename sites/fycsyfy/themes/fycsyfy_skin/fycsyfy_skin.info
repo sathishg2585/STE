@@ -1,0 +1,10 @@
+screenshot  = screenshot.png
+name        = FYC Syfy Skin
+description = FYC Syfy Theme
+core        = 7.x
+base theme  = fycskin
+
+stylesheets[all][] = css/fycsyfy_styles.css
+
+scripts[] = js/jquery.videoloader.js
+scripts[] = js/syfy.js

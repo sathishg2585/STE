@@ -1,0 +1,90 @@
+.fyc-usa-logo {
+  background: transparent url("../images/logo-header.png") no-repeat scroll right center !important;
+}
+
+.fyc-footer a {
+  text-decoration: none !important;
+}
+
+.page-user.not-logged-in .panel-display.panel-1col .panel-panel.panel-col .pane-fyc-login-logo .fyc-login-logo {
+  background: url("../images/logo.png") no-repeat 0 0 !important;
+}
+
+.pane-fyc-access-code-block {
+  width: 96.3% !important;
+}
+.pane-fyc-access-code-block #fyc-access-code-form {
+  width: 96.3%;
+}
+.pane-fyc-access-code-block #fyc-access-code-form div:first-child {
+  background: #393939 url("../images/logo.png") no-repeat 0 0 !important;
+}
+
+.pane-page-messages {
+  width: 96.3% !important;
+}
+.pane-page-messages .messages--error {
+  width: 91.6% !important;
+}
+
+#tinymce p {
+  max-width: 95%;
+}
+
+em {
+  font-style: italic;
+}
+
+strong, b {
+  font-weight: bold;
+}
+
+u {
+  text-decoration: underline;
+}
+
+.fyc-content-wrapper .pane-fyc-landing-page-menu, .fyc-content-wrapper .pane-fyc-inner-page-menu {
+  background: #33123F !important;
+  font-family: "syfy",Helvetica,Arial,sans-serif !important;
+  line-height: 33px !important;
+}
+.fyc-content-wrapper .pane-fyc-landing-page-menu .item-list li a, .fyc-content-wrapper .pane-fyc-inner-page-menu .item-list li a {
+  color: #a179b1 !important;
+  font-size: 16px !important;
+}
+.fyc-content-wrapper .pane-fyc-landing-page-menu .item-list li.highlight a, .fyc-content-wrapper .pane-fyc-inner-page-menu .item-list li.highlight a {
+  color: #ffffff !important;
+  font-size: 16px !important;
+}
+.fyc-content-wrapper .pane-page-content .panel-display .fyc-left-wrapper {
+  width: 44% !important;
+}
+.fyc-content-wrapper .pane-page-content .panel-display .fyc-video-page .player .grid .video-player .playlist li {
+  height: 106px !important;
+  width: 188px !important;
+}
+.fyc-content-wrapper .pane-page-content .panel-display .fyc-video-page .player .grid .video-description {
+  margin-left: 2px;
+}
+.fyc-content-wrapper .pane-page-content .panel-display .fyc-video-page .player .grid .video-description h1 {
+  color: #FFFFFF;
+}
+.fyc-content-wrapper .pane-page-content .panel-display .fyc-video-page .player .grid .quotes {
+  margin-left: 7px !important;
+}
+.fyc-content-wrapper .pane-fyc-tab {
+  background-position: 10em 0.1em !important;
+}
+
+.fyc-homepage-project-wrapper, .fyc-innerpages-wrapper, .page-page-not-found, .page-access-denied {
+  max-width: 96.3% !important;
+}
+.fyc-homepage-project-wrapper .fyc-header-wrapper .fyc-usa-wrapper .fyc-usa-message, .fyc-innerpages-wrapper .fyc-header-wrapper .fyc-usa-wrapper .fyc-usa-message, .page-page-not-found .fyc-header-wrapper .fyc-usa-wrapper .fyc-usa-message, .page-access-denied .fyc-header-wrapper .fyc-usa-wrapper .fyc-usa-message {
+  width: 83%;
+}
+.fyc-homepage-project-wrapper .fyc-header-wrapper .fyc-usa-wrapper .fyc-usa-message .header_link, .fyc-innerpages-wrapper .fyc-header-wrapper .fyc-usa-wrapper .fyc-usa-message .header_link, .page-page-not-found .fyc-header-wrapper .fyc-usa-wrapper .fyc-usa-message .header_link, .page-access-denied .fyc-header-wrapper .fyc-usa-wrapper .fyc-usa-message .header_link {
+  font-weight: normal !important;
+}
+.fyc-homepage-project-wrapper .fyc-header-wrapper .fyc-usa-wrapper .fyc-usa-logo, .fyc-innerpages-wrapper .fyc-header-wrapper .fyc-usa-wrapper .fyc-usa-logo, .page-page-not-found .fyc-header-wrapper .fyc-usa-wrapper .fyc-usa-logo, .page-access-denied .fyc-header-wrapper .fyc-usa-wrapper .fyc-usa-logo {
+  width: 17%;
+}

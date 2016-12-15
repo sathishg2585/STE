@@ -1,0 +1,24 @@
+<?php
+/**
+ * @file
+ * Code for the FYC SYFY Build feature.
+ */
+
+include_once 'fycsyfy_build.features.inc';
+
+/**
+ * Vocabulary for templates of new fyc show.
+ */
+define('FYC_MENU_ITEMS_VOCABULARY', 'menu_items');
+
+/**
+ * Implements hook_module_implements_alter().
+ */
+function fycsyfy_build_module_implements_alter(&$implementations, $hook) {
+  if ($hook == 'taxonomy_term_insert') {
+    // Move hook to the end of the list.
+    $group = $implementations['fycsyfy_build'];
+    unset($implementations['fycsyfy_build']);
+    $implementations['fycsyfy_build'] = $group;
+  }
+}

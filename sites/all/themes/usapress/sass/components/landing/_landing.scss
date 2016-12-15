@@ -1,0 +1,280 @@
+.usanetwork-press-logo {
+  background: url('../images/usa-logo.png') 0px 0px no-repeat;
+  display: inline-block;
+  margin-top: 40px;
+  height: 60px;
+  width: 134px;
+}
+
+.usanetwork-homepage-single-project-wrapper,
+.usanetwork-press-homepage-multi-row {
+  position: relative;
+}
+
+.usanetwork-press-single-homepage {
+  .usanetwork-homepage-single-project-wrapper {
+    text-align: center;
+    min-height: 1080px;
+    background-size: cover;
+    background-position: center !important;
+
+    .pane-usanetwork-press-logo {
+      margin-bottom: 560px;
+    }
+
+    .pane-node-field-press-kit-logo {
+      position: absolute;
+      bottom: 430px;
+      left: 50%;
+      -webkit-transform: translate(-50%);
+      transform: translate(-50%);
+      max-width: 50%;
+    }
+
+    .pane-usanetwork-press-enter-label {
+      margin-top: 15px;
+    }
+  }
+}
+
+.usanetwork-press-multi-homepage {
+  .panel-display {
+    background-color: white;
+    text-align: center;
+  }
+
+  .usanetwork-homepage-header {
+    max-width: 1000px;
+    margin: 0 auto;
+
+    .usanetwork-press-logo {
+      margin-top: 35px;
+      background-size: 120px 120px;
+      background-position: 0px -60px;
+      width: 120px;
+      height: 65px;
+    }
+
+    .field-name-field-press-kit-intro-text {
+      font-family: $avalon-regular;
+      font-size: 28px;
+      line-height: 38px;
+      color: $purple_main;
+      margin: 0 0 30px 0;
+      max-width: 1000px;
+    }
+  }
+
+  .view-langing-page-projects {
+    max-width: 1000px;
+    margin: 0 auto;
+    margin-bottom: 165px;
+
+    .usanetwork-press-homepage-multi-row {
+      margin-bottom: 4px;
+      padding: 35% 40px 0 40px;
+      text-align: center;
+      background-size: cover;
+      position: relative;
+
+      .views-field-field-press-kit-logo {
+        position: absolute;
+        bottom: 17%;
+        left: 50%;
+        -webkit-transform: translate(-50%);
+        transform: translate(-50%);
+        max-width: 50%;
+
+        img {
+          max-width: 100%;
+        }
+      }
+
+      .enter-site-label {
+        position: absolute;
+        bottom: 15px;
+        text-align: center;
+        width: 92%;
+      }
+    }
+  }
+}
+
+.usanetwork-press-single-homepage .pane-node-field-press-kit-date-text,
+.usanetwork-press-single-homepage .pane-node-field-press-kit-date-date,
+.usanetwork-press-multi-homepage .views-field-field-press-kit-date-text,
+.usanetwork-press-multi-homepage .views-field-field-press-kit-date-date {
+  color: $white;
+}
+
+.usanetwork-press-multi-homepage .views-field-field-press-kit-date-text,
+.usanetwork-press-multi-homepage .views-field-field-press-kit-date-date {
+  clear: right;
+  position: absolute;
+  right: 4%;
+}
+
+.usanetwork-press-single-homepage .field-name-field-press-kit-date-text,
+.usanetwork-press-multi-homepage .views-field-field-press-kit-date-text {
+  font-family: $avalon-bold;
+  text-transform: uppercase;
+}
+
+.usanetwork-press-single-homepage .pane-node-field-press-kit-date-text {
+  font-family: $avalon-medium;
+  text-transform: uppercase;
+}
+
+.usanetwork-press-single-homepage .field-name-field-press-kit-date-text {
+  font-size: 14px;
+  line-height: 20px;
+  letter-spacing: 1.4px;
+}
+
+.usanetwork-press-multi-homepage .views-field-field-press-kit-date-text {
+  font-size: 12px;
+  line-height: 18px;
+  top: 7%;
+  letter-spacing: 1px;
+}
+
+.usanetwork-press-single-homepage .field-name-field-press-kit-date-date,
+.usanetwork-press-multi-homepage .views-field-field-press-kit-date-date {
+  font-family: $avalon-medium;
+  letter-spacing: -0.6px;
+}
+
+.usanetwork-press-single-homepage .field-name-field-press-kit-date-date {
+  font-size: 28px;
+  line-height: 32px;
+}
+
+.usanetwork-press-multi-homepage .views-field-field-press-kit-date-date {
+  font-size: 24px;
+  line-height: 28px;
+  top: 12%;
+}
+
+.enter-site-label {
+  .usanetwork-press-enter-site-label {
+    border: 2px solid $white;
+    color: $white;
+    display: inline-block;
+    font-family: $avalon-medium;
+    line-height: 24px;
+    text-transform: uppercase;
+    letter-spacing: 1.3px;
+  }
+}
+
+.usanetwork-press-single-homepage {
+  .enter-site-label {
+    .usanetwork-press-enter-site-label {
+      font-size: 14px;
+      padding: 9px 16px;
+    }
+  }
+}
+
+.usanetwork-press-multi-homepage {
+  .enter-site-label {
+    .usanetwork-press-enter-site-label {
+      font-size: 12px;
+      padding: 6px 14px;
+    }
+  }
+}
+
+.usanetwork-pres-row-link {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  left: 0;
+  top: 0;
+  z-index: 10;
+}
+
+/*----------- Tablets -------------*/
+@media #{$tablet-only} {
+  .usanetwork-press-single-homepage {
+    max-height: 1280px;
+
+    .usanetwork-homepage-single-project-wrapper {
+      min-height: 1280px;
+
+      .pane-usanetwork-press-logo {
+        margin-bottom: 540px;
+      }
+
+      .pane-node-field-press-kit-logo {
+        bottom: 615px;
+
+        img {
+          width: 70%;
+        }
+      }
+
+      .pane-usanetwork-press-enter-label {
+        margin-top: 25px;
+      }
+    }
+  }
+
+  .usanetwork-press-multi-homepage {
+    .view-langing-page-projects .usanetwork-press-homepage-multi-row .views-field-field-press-kit-logo {
+      bottom: 20%
+    }
+  }
+}
+
+@media #{$apple-only} {
+  .usanetwork-press-single-homepage {
+    max-height: 1024px;
+
+    .usanetwork-homepage-single-project-wrapper {
+      min-height: 1024px;
+
+      .pane-node-field-press-kit-logo {
+        bottom: 360px;
+
+        img {
+          width: 70%;
+        }
+      }
+    }
+  }
+}
+
+/*----------- Portable Fix For Single HP For Apple Tablets In Landscape -------------*/
+@media #{$apple-landscape} {
+  .usanetwork-press-single-homepage {
+    max-height: 768px;
+
+    .usanetwork-homepage-single-project-wrapper {
+      min-height: 768px;
+
+      .pane-usanetwork-press-logo {
+        margin-bottom: 460px;
+      }
+
+      .pane-node-field-press-kit-logo {
+        bottom: 185px;
+
+        img {
+          width: 70%;
+        }
+      }
+    }
+  }
+}
+
+/*----------- Portable Fix For Multi HP -------------*/
+@media #{$portable-only} {
+  .usanetwork-press-multi-homepage .views-field-field-press-kit-date-text {
+    font-size: 11px;
+  }
+
+  .usanetwork-press-multi-homepage .views-field-field-press-kit-date-date {
+    font-size: 22px;
+  }
+}

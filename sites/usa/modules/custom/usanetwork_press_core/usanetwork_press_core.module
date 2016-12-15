@@ -1,0 +1,343 @@
+<?php
+/**
+ * @file
+ * Code for the USA Network Press Core feature.
+ */
+
+include_once 'usanetwork_press_core.features.inc';
+
+/**
+ * Vocabulary for templates of new press kits.
+ */
+define('USANETWORK_PRESS_MENU_ITEMS_VOCABULARY', 'menu_items');
+
+/**
+ * Implements hook_page_build().
+ */
+function usanetwork_press_core_page_build(&$page) {
+  // Attach overrides css.
+  $page['page_top']['#attached']['css']['//assets.usanetwork.com/press/overrides.css'] = array(
+    'scope' => 'header',
+    'type' => 'external',
+  );
+}
+
+/**
+ * Implements hook_node_update().
+ */
+function usanetwork_press_core_node_update($node) {
+  usanetwork_press_core_prepopulate_photo_urls($node);
+  if($node->type == 'press_kit_project') {
+    usanetwork_press_core_publish_project_nodes($node);
+  }
+  elseif ($node->status == NODE_PUBLISHED && $node->type == 'press_kit') {
+    usanetwork_press_core_check_project_status($node);
+  }
+  elseif ($node->status == NODE_PUBLISHED) {
+    usanetwork_press_core_get_press_kit($node);
+  }
+}
+
+/**
+ * Implements hook_node_insert().
+ */
+function usanetwork_press_core_node_insert($node) {
+  usanetwork_press_core_prepopulate_photo_urls($node);
+}
+
+function usanetwork_press_core_prepopulate_photo_urls($node) {
+  if($node->type == 'usanetwork_photos') {
+    $first_url = $first_title = '';
+    $fields_entities = entity_metadata_wrapper('node', $node)->field_usanetwork_photos->value();
+    foreach ($fields_entities as $key => $field) {
+      if($key == 0) {
+        $first_url = !empty($field->field_photos_download_link[LANGUAGE_NONE][0]['url']) ? $field->field_photos_download_link[LANGUAGE_NONE][0]['url'] : '';
+        $first_title = !empty($field->field_photos_download_link[LANGUAGE_NONE][0]['title']) ? $field->field_photos_download_link[LANGUAGE_NONE][0]['title'] : '';
+      }
+      elseif ($first_url != '' || $first_title != '') {
+        if(empty($field->field_photos_download_link[LANGUAGE_NONE][0]['url'])){
+          $field->field_photos_download_link[LANGUAGE_NONE][0]['url'] = $first_url;
+        }
+        if(empty($field->field_photos_download_link[LANGUAGE_NONE][0]['title'])){
+          $field->field_photos_download_link[LANGUAGE_NONE][0]['title'] = $first_title;
+        }
+        $field->save(TRUE);
+      }
+    }
+  }
+}
+
+/**
+ * Implements hook_image_styles_alter().
+ */
+function usanetwork_press_core_image_styles_alter(&$styles) {
+  if(isset($styles['media_thumbnail'])){
+    $styles['media_thumbnail']['label'] = 'Media thumbnail (190x190)';
+    foreach($styles['media_thumbnail']['effects'] as &$effect) {
+      $effect['data'] = array('width' => 190, 'height' => 190);
+    }
+  }
+}
+
+
+/**
+ * Implements hook_form_alter().
+ */
+function usanetwork_press_core_form_alter(&$form, &$form_state, $form_id) {
+  switch ($form_id) {
+    case 'taxonomy_form_term':
+      // Checking if we are on the delete confirmation form.
+      if (isset($form['delete']) && $form['#vocabulary']->machine_name == 'press_kit_items') {
+        $tid = $form['#term']->tid;
+        $message = '';
+        $bundles = field_info_field('field_menu_position')['bundles']['node'];
+
+        foreach($bundles as $bundle) {
+          $query = new EntityFieldQuery();
+          $query->entityCondition('entity_type', 'node')
+            ->entityCondition('bundle', $bundle)
+            ->fieldCondition('field_menu_position', 'tid', $tid);
+          $result = $query->execute();
+          if (isset($result['node']) && count($result['node']) > 0) {
+            foreach($result['node'] as $nid) {
+              $node = node_load($nid->nid);
+              $message .= t('This menu item has content assigned to it: !node_title. Please reassign !node_title to a different menu item' . '<br />',
+                array('!node_title' => l($node->title, 'node/' . $node->nid . '/edit')));
+            }
+          }
+        }
+        drupal_set_message($message, 'warning');
+      }
+      break;
+    case 'press_kit_project_node_form':
+      if (isset($form['field_press_kit'][LANGUAGE_NONE]['actions']['ief_add']['#value'])) {
+        $form['field_press_kit'][LANGUAGE_NONE]['actions']['ief_add']['#value'] = element_children($form['field_press_kit'][LANGUAGE_NONE]['entities']) ? 'Create another E-Kit' : 'Create E-Kit';
+      }
+      if (isset($form['field_press_kit'][LANGUAGE_NONE]['entities'])) {
+        $press_kits = element_children($form['field_press_kit'][LANGUAGE_NONE]['entities']);
+        foreach($press_kits as $key => &$press_kit){
+          $form['field_press_kit'][LANGUAGE_NONE]['entities'][$press_kit]['form']['actions']['ief_edit_save']['#value'] = 'Update E-kit';
+          $form['field_press_kit'][LANGUAGE_NONE]['entities'][$press_kit]['form']['#title'] = 'Create E-Kit';
+          $form['field_press_kit'][LANGUAGE_NONE]['entities'][$press_kit]['form']['title']['#title'] = 'E-Kit Title';
+          if (!empty($form['field_press_kit'][LANGUAGE_NONE]['entities'][$press_kit]['form']['field_press_kit_background'][LANGUAGE_NONE][0]['#title'])) {
+            $form['field_press_kit'][LANGUAGE_NONE]['entities'][$press_kit]['form']['field_press_kit_background'][LANGUAGE_NONE][0]['#title'] = 'Homepage image';
+          }
+
+          if (!empty($form['field_press_kit'][LANGUAGE_NONE]['entities'][$press_kit]['form']['field_press_kit_logo'][LANGUAGE_NONE][0]['#title'])) {
+            $form['field_press_kit'][LANGUAGE_NONE]['entities'][$press_kit]['form']['field_press_kit_logo'][LANGUAGE_NONE][0]['#title'] = 'E-Kit logo';
+          }
+
+          if (!empty($form['field_press_kit'][LANGUAGE_NONE]['entities'][$press_kit]['form']['field_press_kit_header_bg'][LANGUAGE_NONE][0]['#title'])) {
+            $form['field_press_kit'][LANGUAGE_NONE]['entities'][$press_kit]['form']['field_press_kit_header_bg'][LANGUAGE_NONE][0]['#title'] = 'Header image';
+          }
+          if ($form_state['storage']['kit_type'] == 'multiple') {
+            $form['field_press_kit'][LANGUAGE_NONE]['entities'][$press_kit]['form']['field_press_kit_background']['#access'] = FALSE;
+            if (!empty($form['field_press_kit'][LANGUAGE_NONE]['entities'][$press_kit]['form']['field_press_kit_header_bg'][LANGUAGE_NONE][0]['#title'])) {
+              $form['field_press_kit'][LANGUAGE_NONE]['entities'][$press_kit]['form']['field_press_kit_header_bg'][LANGUAGE_NONE][0]['#title'] = 'Header and Homepage image';
+            }
+          }
+
+        }
+      }
+    break;
+    case 'links_page_node_form':
+      if (!empty($form['field_social_media_links'][LANGUAGE_NONE]['add_more'])) {
+        $form['field_social_media_links'][LANGUAGE_NONE]['add_more']['#value'] = 'Add another block';
+      }
+
+      foreach ($form['field_social_media_links'][LANGUAGE_NONE] as $key => &$media_links) {
+        if (!empty($media_links['remove_button'])) {
+          $media_links['remove_button']['#value'] = 'Remove block';
+
+          if (!empty($media_links['field_link'][LANGUAGE_NONE])) {
+            $media_links['field_link'][LANGUAGE_NONE]['add_more']['#value'] = 'Add another line';
+            foreach ($media_links['field_link'][LANGUAGE_NONE] as &$fiels_link_item) {
+              if (!empty($fiels_link_item['remove_button'])) {
+                $fiels_link_item['remove_button']['#value'] = 'Remove line';
+              }
+            }
+          }
+        }
+      }
+
+      break;
+  }
+}
+
+/**
+ * Implements hook_form_FORM_ID_alter().
+ */
+function usanetwork_press_core_form_press_kit_node_form_alter(&$form, &$form_state, $form_id) {
+  if(isset($form['field_press_kit_tax_item'])) {
+    $form['field_press_kit_tax_item']['#access'] = FALSE;
+  }
+}
+
+/**
+ * Implements hook_inline_entity_form_entity_form_alter().
+ */
+function usanetwork_press_core_inline_entity_form_entity_form_alter(&$entity_form, &$form_state) {
+  if($form_state['build_info']['form_id'] == 'press_kit_project_node_form' && isset($entity_form['field_press_kit_tax_item'])) {
+    $entity_form['field_press_kit_tax_item']['#access'] = FALSE;
+  }
+}
+
+/**
+ * Implements hook_menu_alter().
+ */
+function usanetwork_press_core_menu_alter(&$items) {
+  $items['node/add/press-kit']['access callback'] = FALSE;
+}
+
+function usanetwork_press_core_form_user_login_block_alter(&$form, &$form_state, $form_id) {
+  unset($form['links']);
+}
+
+/**
+ * Implements hook_ctools_render_alter().
+ */
+function usanetwork_press_core_ctools_render_alter(&$info, &$page, &$context) {
+  if($context['handler']->name == 'term_view__press_kit_no_content' &&
+    isset($context['handler']->conf['display']->context['relationship_node_from_view_1']->empty) &&
+    $context['handler']->conf['display']->context['relationship_node_from_view_1']->empty == TRUE) {
+    $info['content'] .= '<br>' . t('No content is available yet.');
+  }
+}
+
+/**
+ * Implements hook_field_attach_form().
+ */
+function usanetwork_press_core_field_attach_form($entity_type, $entity, &$form, &$form_state, $langcode) {
+  switch ($form_state['build_info']['form_id']) {
+    case 'links_page_node_form':
+      if (isset($form['#entity_type']) && isset($form['#bundle']) && $form['#bundle'] == 'field_social_media_links') {
+        foreach(array_keys(field_info_instances($form['#entity_type'], $form['#bundle'])) as $field_name) {
+          if($field_name == 'field_link') {
+            $field_info = field_info_field($field_name);
+            $lang = $form[$field_name]['#language'];
+            if ($field_info['type'] == 'link_field' && $form[$field_name][$lang]['#max_delta'] > 0 && !isset($entity->is_new)) {
+              $last_index = $form[$field_name][$lang]['#max_delta']--;
+              unset($form[$field_name][$lang][$last_index]);
+            }
+          }
+        }
+      }
+      break;
+  }
+}
+
+function usanetwork_press_core_publish_project_nodes($node) {
+  $status = $node->status;
+  $press_kits = entity_metadata_wrapper('node', $node)->field_press_kit->value();
+  $voc = taxonomy_vocabulary_machine_name_load('press_kit_items');
+  foreach($press_kits as $press_kit) {
+    $press_kit->status = $status;
+    node_save($press_kit);
+    $term_id = $press_kit->field_press_kit_tax_item[LANGUAGE_NONE][0]['tid'];
+    $child_terms = taxonomy_get_tree($voc->vid, $term_id);
+    foreach($child_terms as $child_term) {
+      if($child_term->parents[0] == $term_id) {
+        switch ($child_term->name) {
+          case 'Press Materials':
+            $type = 'press_materials_page';
+            break;
+          case 'Photos':
+            $type = 'usanetwork_photos';
+            break;
+          case 'Videos':
+            $type = 'videos_page';
+            break;
+          case 'Links':
+            $type = 'links_page';
+            break;
+          case 'Contacts':
+            $type = 'contacts_page';
+            break;
+          default:
+            $type = 'press_materials_page';
+        }
+      }
+      if(!empty($type)) {
+        $query = new EntityFieldQuery();
+        $query->entityCondition('entity_type', 'node')
+          ->entityCondition('bundle', $type)
+          ->fieldCondition('field_menu_position', 'tid', $child_term->tid);
+        $result = $query->execute();
+        if (isset($result['node']) && count($result['node']) > 0) {
+          foreach($result['node'] as $nid) {
+            $node_material = node_load($nid->nid);
+            $node_material->status = $status;
+            node_save($node_material);
+          }
+        }
+      }
+    }
+  }
+}
+
+function usanetwork_press_core_get_press_kit($node) {
+  $term_id = entity_metadata_wrapper('node', $node)->field_menu_position->value();
+  if (!empty($term_id)) {
+    $term_parent = taxonomy_get_parents_all($term_id->tid);
+    $press_kit_term = end($term_parent);
+    $query = new EntityFieldQuery();
+    $query->entityCondition('entity_type', 'node')
+      ->entityCondition('bundle', 'press_kit')
+      ->fieldCondition('field_press_kit_tax_item', 'tid', $press_kit_term->tid);
+    $result = $query->execute();
+    if (isset($result['node'])) {
+      $press_kit = reset($result['node']);
+      usanetwork_press_core_check_project_status($press_kit, $node);
+    }
+  }
+}
+
+function usanetwork_press_core_check_project_status($press_kit, $node = FALSE) {
+  if (!$node) {
+    $node = $press_kit;
+  }
+  $query = new EntityFieldQuery();
+  $query->entityCondition('entity_type', 'node')
+    ->entityCondition('bundle', 'press_kit_project')
+    ->fieldCondition('field_press_kit', 'target_id', $press_kit->nid);
+  $result = $query->execute();
+  if (isset($result['node'])) {
+    $project = node_load(reset($result['node'])->nid, NULL, TRUE);
+    if ($project->status == NODE_NOT_PUBLISHED) {
+      $node->status = NODE_NOT_PUBLISHED;
+      node_save($node);
+      $message = t('The node !node_title cannot be published until the related project !project_title is published.',
+        array(
+          '!node_title' => l($node->title, 'node/' . $node->nid . '/edit'),
+          '!project_title' => l($project->title, 'node/' . $project->nid . '/edit'),
+        ));
+      drupal_set_message($message, 'warning');
+    }
+  }
+}
+
+/**
+ * Check is empty field for entity object.
+ *
+ * @param $entity_object
+ *   can be entity wrapper or just entity object.
+ * @param $field_name
+ * @param string $entity_type
+ *   is not required for entity wrapper.
+ * @return bool
+ */
+function usanetwork_press_core_check_field($entity_object, $field_name, $entity_type = 'node') {
+  if (is_a($entity_object, 'EntityDrupalWrapper')) {
+    $entity_type = $entity_object->type();
+    $entity_object = $entity_object->value();
+  }
+
+  if (is_object($entity_object)) {
+    $field = field_get_items($entity_type, $entity_object, $field_name);
+    if ($field) {
+      return TRUE;
+    }
+  }
+
+  return FALSE;
+}

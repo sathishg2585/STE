@@ -1,0 +1,38 @@
+@import "core/variables";
+@import "core/fonts";
+
+body.cke_editable {
+  h2 {
+    font-size: 24px;
+  }
+
+  h3 {
+    font-size: 18px;
+  }
+
+  h2, h3, p, ul, ol {
+    color: $gray_font_content;
+  }
+
+  h2, h3 {
+    font-family: $bold;
+    line-height: 25px;
+    margin-bottom: 25px;
+  }
+
+  p, ul, ol {
+    font-family: $regular;
+    font-size: 15px;
+    line-height: 25px;
+    margin: 20px 0;
+  }
+
+  a {
+    color: $purple_content_button;
+  }
+
+  img {
+    display: block;
+    margin: 0 15px;
+  }
+}

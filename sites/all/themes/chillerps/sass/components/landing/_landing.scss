@@ -1,0 +1,95 @@
+.syfy-press-logo {
+  background: url('../images/chiller_logo.png') 0px 0px no-repeat;
+  width: 170px;
+}
+
+.sy-fy-press-multi-homepage {
+  .syfy-homepage-header {
+    .syfy-press-logo {
+      background-size: 170px 151px;
+      background-position: 0px -75px;
+      width: 170px;
+      height: 75px;
+    }
+
+    .field-name-field-press-kit-intro-text {
+      font-family: $regular;
+      color: $red;
+      margin: 10px 0 30px 0;
+    }
+  }
+
+}
+
+.sy-fy-press-single-homepage .field-name-field-press-kit-date-text,
+.sy-fy-press-multi-homepage .views-field-field-press-kit-date-text {
+  font-family: $regular;
+  text-transform: uppercase;
+}
+
+.sy-fy-press-single-homepage .field-name-field-press-kit-date-text {
+  font-size: 24px;
+  line-height: 30px;
+  letter-spacing: 1.4px;
+}
+
+.sy-fy-press-multi-homepage .views-field-field-press-kit-date-text {
+  font-size: 22px;
+  line-height: 28px;
+  top: 7%;
+  letter-spacing: 1px;
+}
+
+.sy-fy-press-single-homepage .field-name-field-press-kit-date-date,
+.sy-fy-press-multi-homepage .views-field-field-press-kit-date-date {
+  @include triangle-topleft(20px);
+  display: inline-block;
+  font-family: $bold;
+  letter-spacing: -0.6px;
+  margin-top: 5px;
+  .field-item {
+    margin-top: 11px;
+    margin-left: 16px;
+    color: $red;
+    sup {
+      margin-left: 4px;
+      top: -0.5em;
+      font-family: $regular;
+      font-size: 30px;
+    }
+  }
+}
+
+.sy-fy-press-single-homepage .field-name-field-press-kit-date-date {
+  font-size: 50px;
+  line-height: 52px;
+  position: relative;
+}
+
+.sy-fy-press-multi-homepage .views-field-field-press-kit-date-date {
+  font-size: 32px;
+  line-height: 36px;
+  top: 12%;
+  .field-content {
+    margin-top: 13px;
+    margin-left: 20px;
+    color: $red;
+  }
+}
+
+.enter-site-label {
+  .syfy-press-enter-site-label {
+    @include chiller_button;
+    text-transform: none;
+  }
+}
+
+.sy-fy-press-single-homepage,
+.sy-fy-press-multi-homepage {
+  .enter-site-label {
+    .syfy-press-enter-site-label {
+      font-size: 16px;
+      padding: 0 16px;
+    }
+  }
+}

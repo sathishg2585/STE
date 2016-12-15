@@ -1,0 +1,114 @@
+.syfy-press-content-wrapper {
+  > .pane-page-content {
+    position: relative;
+
+    .contextual-links-region {
+      color: $gray_font_content;
+    }
+  }
+
+  .pane-node-title,
+  .pane-node-field-download-pdf,
+  .pane-node-title h2,
+  .fake-photos-download-link {
+    display: table-cell;
+  }
+
+  .pane-node-title,
+  .pane-node-title h2 {
+    width: 100%;
+  }
+
+  .fake-photos-download-link,
+  .pane-node-field-download-pdf {
+    max-width: 100%;
+    padding-left: 20px;
+
+    a {
+      white-space: pre;
+    }
+  }
+
+  .pane-node-field-download-pdf,
+  .fake-photos-download-link {
+    padding-bottom: 35px;
+    float: right;
+  }
+
+  .pane-node-title ~ .pane-node-field-download-pdf,
+  .pane-node-title ~ .fake-photos-download-link {
+    float: none;
+  }
+
+  .pane-node-body,
+  .pane-node-field-syfy-photos {
+    clear: both;
+  }
+
+  .syfy-press-content-sidebar {
+
+    .pane-node-field-download-pdf,
+    .field-name-field-syfy-photos-download-link,
+    .fake-photos-download-link {
+      a {
+        background-color: $purple_content_button;
+        font-family: 'Syfy-Bold';
+        font-size: 12px;
+        line-height: 20px;
+        color: $white;
+        display: block;
+        text-decoration: none;
+        text-transform: uppercase;
+        text-align: center;
+        padding: 10px 15px;
+        letter-spacing: 1px;
+      }
+    }
+
+    .fake-photos-download-link {
+      text-align: right;
+      padding-left: 10px;
+      min-height: 40px;
+
+      a {
+        display: inline-block;
+      }
+    }
+
+    .pane-node-body {
+      h2 {
+        font-size: 24px;
+      }
+
+      h3 {
+        font-size: 18px;
+      }
+
+      h2, h3, p, ul, ol {
+        color: $gray_font_content;
+      }
+
+      h2, h3 {
+        font-family: 'Syfy-Bold';
+        line-height: 25px;
+        margin-bottom: 25px;
+      }
+
+      p, ul, ol {
+        font-family: 'Syfy-Regular';
+        font-size: 15px;
+        line-height: 25px;
+        margin: 20px 0;
+      }
+
+      a {
+        color: $purple_content_button;
+      }
+
+      img {
+        display: block;
+        margin: 0 15px;
+      }
+    }
+  }
+}

@@ -1,0 +1,172 @@
+.page-page-not-found,
+.page-access-denied,
+.page-user.not-logged-in,
+.page-user-password {
+  .panel-display {
+    background-color: transparent;
+  }
+
+  .pane-syfy-press-logo {
+    text-align: center;
+
+    .syfy-press-logo {
+      background: url("../images/error_logo.png") no-repeat;
+      width: 195px;
+      height: 102px;
+      margin-top: 100px;
+      margin-bottom: 60px;
+    }
+  }
+}
+
+.page-page-not-found,
+.page-access-denied {
+  background-color: #272727;
+  color: white;
+}
+
+.pane-syfy-press-page-not-found,
+.pane-syfy-press-access-denied,
+.pane-syfy-press-page-unavailable {
+  text-align: center;
+  padding: 35px 0 0 0;
+
+  .syfy-error-title {
+    font-family: $regular;
+    font-weight: normal;
+    font-size: 48px;
+    color: #999999;
+
+    span {
+      color: #dddddd;
+    }
+  }
+
+  .syfy-error-text {
+    width: 512px;
+    font-family: $regular;
+    font-weight: normal;
+    font-size: 16px;
+    color: #999999;
+    margin: 0 auto;
+  }
+
+  .syfy-error-links {
+    color: white;
+    line-height: 12px;
+    font-size: 12px;
+    font-weight: bold;
+    text-transform: uppercase;
+    margin-top: 50px;
+
+    a {
+      display: inline-block;
+      color: white;
+      text-decoration: none;
+      letter-spacing: 1px;
+
+      &.button {
+        @include appearance(initial);
+        padding: 12px;
+        border: 2px solid white;
+        background-color: transparent;
+      }
+    }
+  }
+}
+
+.pane-syfy-press-page-unavailable {
+  .syfy-error-title,
+  .syfy-error-text {
+    color: white;
+  }
+  .syfy-error-title {
+    span {
+      color: white;
+    }
+  }
+}
+
+.page-user-reset {
+  #user-pass-reset {
+    text-align: center;
+    margin: 0 auto;
+
+    p {
+      color: #999999;
+      margin: 0;
+    }
+
+    .form-actions {
+      padding-top: 20px;
+
+      .form-submit {
+        font-family: $bold;
+        font-weight: normal;
+        text-transform: uppercase;
+        background: #522374;
+        color: #fff;
+        border: 0;
+        padding: 16px 27px;
+      }
+    }
+  }
+}
+
+.not-logged-in,
+.page-user-password {
+  .pane-user-login,
+  .pane-syfy-press-password-recovery {
+    text-align: center;
+
+    form {
+      width: 385px;
+      margin: 0 auto;
+
+
+      .form-item label,
+      div > p {
+        font-family: $regular;
+        font-weight: normal;
+        color: #999999;
+      }
+
+      .form-item label {
+        text-transform: uppercase;
+        color: #fff;
+      }
+
+      .form-item input {
+        color: $gray_font_content;
+        display: block;
+        padding: 15px 25px;
+        width: 100%;
+      }
+    }
+    .form-actions {
+      padding-top: 20px;
+
+      .form-submit {
+        font-family: $bold;
+        font-weight: normal;
+        text-transform: uppercase;
+        background: #522374;
+        color: #fff;
+        border: 0;
+        padding: 16px 27px;
+      }
+    }
+  }
+
+  .pane-syfy-press-password-recovery .form-item-name {
+    text-align: left;
+
+    .description {
+      font-family: "Syfy-Regular";
+      font-weight: normal;
+      text-align: center;
+      color: #999999;
+      margin-top: 15px;
+    }
+  }
+}

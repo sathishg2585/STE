@@ -1,0 +1,210 @@
+.page-node-add .admin-list li,
+.page-node-edit .admin-list li {
+  max-width: 100%;
+}
+.page-node-add .admin-list li:first-child span,
+.page-node-edit .admin-list li:first-child span {
+  color: #2fa6e5;
+}
+.page-node-add #press-materials-page-node-form .field-name-body .form-textarea-wrapper,
+.page-node-edit #press-materials-page-node-form .field-name-body .form-textarea-wrapper {
+  max-width: 825px;
+}
+.page-node-add .group-images .field-type-image,
+.page-node-edit .group-images .field-type-image {
+  margin-top: 10px;
+  padding-bottom: 5px;
+  border-bottom: 1px solid #ccc;
+}
+.page-node-add .group-images .field-type-image .media-widget,
+.page-node-edit .group-images .field-type-image .media-widget {
+  position: relative;
+}
+.page-node-add .group-images .field-type-image .media-widget img.file-icon,
+.page-node-edit .group-images .field-type-image .media-widget img.file-icon {
+  display: none;
+}
+.page-node-add .group-images .field-type-image .media-widget .preview,
+.page-node-add .group-images .field-type-image .media-widget .manualcrop-preview,
+.page-node-edit .group-images .field-type-image .media-widget .preview,
+.page-node-edit .group-images .field-type-image .media-widget .manualcrop-preview {
+  clear: right;
+  width: 155px;
+  margin-bottom: 5px;
+  min-height: 75px;
+}
+.page-node-add .group-images .field-type-image .media-widget .preview .manualcrop-preview-cropped,
+.page-node-add .group-images .field-type-image .media-widget .manualcrop-preview .manualcrop-preview-cropped,
+.page-node-edit .group-images .field-type-image .media-widget .preview .manualcrop-preview-cropped,
+.page-node-edit .group-images .field-type-image .media-widget .manualcrop-preview .manualcrop-preview-cropped {
+  margin: 0 auto;
+}
+.page-node-add .group-images .field-type-image .media-widget .preview img,
+.page-node-add .group-images .field-type-image .media-widget .manualcrop-preview img,
+.page-node-edit .group-images .field-type-image .media-widget .preview img,
+.page-node-edit .group-images .field-type-image .media-widget .manualcrop-preview img {
+  margin: 0 auto 10px auto;
+}
+.page-node-add .group-images .field-type-image .media-widget .preview label,
+.page-node-add .group-images .field-type-image .media-widget .manualcrop-preview label,
+.page-node-edit .group-images .field-type-image .media-widget .preview label,
+.page-node-edit .group-images .field-type-image .media-widget .manualcrop-preview label {
+  text-align: center;
+}
+.page-node-add .group-images .field-type-image .media-widget input.remove,
+.page-node-add .group-images .field-type-image .media-widget a.browse,
+.page-node-edit .group-images .field-type-image .media-widget input.remove,
+.page-node-edit .group-images .field-type-image .media-widget a.browse {
+  clear: left;
+}
+.page-node-add .group-images .field-type-image .media-widget input.remove,
+.page-node-add .group-images .field-type-image .media-widget a.browse,
+.page-node-add .group-images .field-type-image .media-widget .ctools-modal-media-file-edit,
+.page-node-edit .group-images .field-type-image .media-widget input.remove,
+.page-node-edit .group-images .field-type-image .media-widget a.browse,
+.page-node-edit .group-images .field-type-image .media-widget .ctools-modal-media-file-edit {
+  display: block;
+  float: left;
+}
+.page-node-add .group-images .field-type-image .media-widget .manualcrop-style-button-holder,
+.page-node-edit .group-images .field-type-image .media-widget .manualcrop-style-button-holder {
+  display: inline-block;
+  margin: 0;
+  padding: 0;
+}
+.page-node-add .group-images .field-type-image .media-widget .focal-point-help,
+.page-node-edit .group-images .field-type-image .media-widget .focal-point-help {
+  margin-top: 5px;
+}
+.page-node-add .group-images .field-type-image .media-widget .manualcrop-thumblist,
+.page-node-edit .group-images .field-type-image .media-widget .manualcrop-thumblist {
+  overflow: hidden;
+  position: absolute;
+  left: 175px;
+  top: 0;
+}
+.page-node-add .group-images .field-type-image .media-widget .manualcrop-thumblist strong.manualcrop-style-thumb-label,
+.page-node-edit .group-images .field-type-image .media-widget .manualcrop-thumblist strong.manualcrop-style-thumb-label {
+  min-height: 40px;
+  min-width: 200px;
+}
+.page-node-add .group-images .field-type-image .media-widget .manualcrop-thumblist .manualcrop-preview,
+.page-node-edit .group-images .field-type-image .media-widget .manualcrop-thumblist .manualcrop-preview {
+  display: inline-block;
+}
+.page-node-add .group-images .field-type-image:last-child,
+.page-node-edit .group-images .field-type-image:last-child {
+  border-bottom: 0px;
+}
+.page-node-add .field-name-field-press-kit-intro-text input,
+.page-node-edit .field-name-field-press-kit-intro-text input {
+  width: 100%;
+}
+.page-node-add .field-name-field-press-kit-logo .image-widget img,
+.page-node-edit .field-name-field-press-kit-logo .image-widget img {
+  border: 1px solid #ccc;
+}
+.page-node-add .field-name-field-photos-download-link,
+.page-node-add .field-name-field-menu-position,
+.page-node-add .field-name-field-usanetwork-photos-photo,
+.page-node-edit .field-name-field-photos-download-link,
+.page-node-edit .field-name-field-menu-position,
+.page-node-edit .field-name-field-usanetwork-photos-photo {
+  margin-bottom: 20px;
+}
+.page-node-add .field-widget-text-textarea-with-summary,
+.page-node-edit .field-widget-text-textarea-with-summary {
+  margin-top: 20px;
+}
+.page-node-add .field-add-more-submit,
+.page-node-edit .field-add-more-submit {
+  margin: 20px 0;
+}
+.page-node-add .field-name-field-menu-position .create-new-item .create-new-item-create,
+.page-node-edit .field-name-field-menu-position .create-new-item .create-new-item-create {
+  float: left;
+  margin: 0;
+}
+.page-node-add .field-name-field-menu-position .create-new-item .create-new-item-cancel,
+.page-node-edit .field-name-field-menu-position .create-new-item .create-new-item-cancel {
+  margin: 0;
+}
+.page-node-add .field-name-field-usanetwork-photos-photo .media-widget a.button.browse,
+.page-node-edit .field-name-field-usanetwork-photos-photo .media-widget a.button.browse {
+  display: inline-block;
+  margin-top: 0;
+}
+.page-node-add .field-name-field-usanetwork-photos-photo .media-widget .manualcrop-style-button-holder,
+.page-node-edit .field-name-field-usanetwork-photos-photo .media-widget .manualcrop-style-button-holder {
+  display: inline-block;
+  padding-top: 0;
+}
+.page-node-add .field-name-field-download-pdf .form-type-link-field > label,
+.page-node-add .field-name-field-photos-download-link .form-type-link-field > label,
+.page-node-add .field-name-field-menu-position label,
+.page-node-add .field-widget-text-textarea-with-summary .form-type-textarea > label,
+.page-node-edit .field-name-field-download-pdf .form-type-link-field > label,
+.page-node-edit .field-name-field-photos-download-link .form-type-link-field > label,
+.page-node-edit .field-name-field-menu-position label,
+.page-node-edit .field-widget-text-textarea-with-summary .form-type-textarea > label {
+  margin-bottom: 5px;
+}
+
+.page-media-format-form #media-wysiwyg-format-form > div {
+  position: relative;
+  overflow: hidden;
+}
+.page-media-format-form #media-wysiwyg-format-form .manualcrop-style-button-holder {
+  padding-bottom: 90px;
+  padding-top: 0;
+}
+.page-media-format-form #media-wysiwyg-format-form a.button.fake-ok {
+  display: none;
+}
+.page-media-format-form #media-wysiwyg-format-form #edit-submit-crop {
+  position: absolute;
+  bottom: 45px;
+  left: 0;
+}
+.page-media-format-form #media-wysiwyg-format-form .manualcrop-style-button-holder {
+  display: block;
+  float: left;
+  clear: left;
+}
+.page-media-format-form #media-wysiwyg-format-form button[type="submit"] {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+}
+
+body.page-media-browser #media-browser-library-list {
+  width: 100%;
+}
+body.page-media-browser #media-browser-tabset .media-list-thumbnails li {
+  width: 15%;
+  margin-right: 1.6%;
+}
+body.page-media-browser #media-browser-tabset .media-list-thumbnails li:nth-child(6n+7) {
+  clear: left;
+}
+body.page-media-browser #media-browser-tabset .media-list-thumbnails li .media-item {
+  padding: 5% 5% 18px 5%;
+}
+
+.page-node-add-press-kit-project fieldset.ief-form,
+.page-node-add-press-kit-project .ief-entity-table div.ief-form-row,
+.page-node-edit.node-type-press-kit-project fieldset.ief-form,
+.page-node-edit.node-type-press-kit-project .ief-entity-table div.ief-form-row {
+  background-color: #FAFAFA;
+  border: 1px solid #ccc;
+  padding: 25px;
+}
+.page-node-add-press-kit-project .inline-entity-form-node-title,
+.page-node-edit.node-type-press-kit-project .inline-entity-form-node-title {
+  font-weight: 600;
+}
+
+.page-file-add #file-entity-add-upload-multiple .sticky-wrapper .my-sticky-element {
+  margin-top: 5px;
+  padding: 0;
+}

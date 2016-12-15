@@ -1,0 +1,8 @@
+<?php
+/**
+ * @file
+ * Code for the FYC USA
+ */
+
+define('SITE_PARENT', 'USA NETWORK');
+define('SITE_PARENT_LINK', 'http://www.usanetwork.com');

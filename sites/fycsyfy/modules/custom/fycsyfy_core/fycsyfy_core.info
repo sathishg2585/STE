@@ -1,0 +1,7 @@
+name = FYC SYFY CORE
+description = Helper functions to manage FYC SYFY site
+package = FYC
+core = 7.x
+
+dependencies[] = fyc
+dependencies[] = fycsyfy_build

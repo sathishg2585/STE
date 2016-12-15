@@ -1,0 +1,173 @@
+.page-page-not-found,
+.page-access-denied,
+.page-user.not-logged-in,
+.page-user-password {
+  .panel-display {
+    background-color: transparent;
+  }
+
+  .pane-usanetwork-press-logo {
+    text-align: center;
+
+    .usanetwork-press-logo {
+      background: url("../images/usa-logo.png") no-repeat;
+      width: 134px;
+      height: 60px;
+      margin-top: 100px;
+      margin-bottom: 60px;
+    }
+  }
+}
+
+.page-page-not-found,
+.page-access-denied {
+  background-color: #272727;
+  color: white;
+}
+
+.pane-usanetwork-press-page-not-found,
+.pane-usanetwork-press-access-denied,
+.pane-usanetwork-press-page-unavailable {
+  text-align: center;
+  padding: 35px 0 0 0;
+
+  .usanetwork-error-title {
+    font-family: $avalon-medium;
+    font-weight: normal;
+    font-size: 48px;
+    color: #999999;
+
+    span {
+      color: #dddddd;
+    }
+  }
+
+  .usanetwork-error-text {
+    width: 512px;
+    font-family: $avalon-medium;
+    font-weight: normal;
+    font-size: 16px;
+    color: #999999;
+    margin: 0 auto;
+  }
+
+  .usanetwork-error-links {
+    color: white;
+    line-height: 12px;
+    font-family: $avalon-medium;
+    font-size: 12px;
+    font-weight: bold;
+    text-transform: uppercase;
+    margin-top: 50px;
+
+    a {
+      display: inline-block;
+      color: white;
+      text-decoration: none;
+      letter-spacing: 1px;
+
+      &.button {
+        @include appearance(initial);
+        padding: 12px;
+        border: 2px solid white;
+        background-color: transparent;
+      }
+    }
+  }
+}
+
+.pane-usanetwork-press-page-unavailable {
+  .usanetwork-error-title,
+  .usanetwork-error-text {
+    color: white;
+  }
+  .usanetwork-error-title {
+    span {
+      color: white;
+    }
+  }
+}
+
+.page-user-reset {
+  #user-pass-reset {
+    text-align: center;
+    margin: 0 auto;
+
+    p {
+      color: #999999;
+      margin: 0;
+    }
+
+    .form-actions {
+      padding-top: 20px;
+
+      .form-submit {
+        font-family: $avalon-bold;
+        font-weight: normal;
+        text-transform: uppercase;
+        background: #522374;
+        color: #fff;
+        border: 0;
+        padding: 16px 27px;
+      }
+    }
+  }
+}
+
+.not-logged-in,
+.page-user-password {
+  .pane-user-login,
+  .pane-usanetwork-press-password-recovery {
+    text-align: center;
+
+    form {
+      width: 385px;
+      margin: 0 auto;
+
+
+      .form-item label,
+      div > p {
+        font-family: $avalon-regular;
+        font-weight: normal;
+        color: #999999;
+      }
+
+      .form-item label {
+        text-transform: uppercase;
+        color: #fff;
+      }
+
+      .form-item input {
+        color: $gray_font_content;
+        display: block;
+        padding: 15px 25px;
+        width: 100%;
+      }
+    }
+    .form-actions {
+      padding-top: 20px;
+
+      .form-submit {
+        font-family: $avalon-medium;
+        font-weight: normal;
+        text-transform: uppercase;
+        background: #808080;
+        color: #fff;
+        border: 0;
+        padding: 16px 27px;
+      }
+    }
+  }
+
+  .pane-usanetwork-press-password-recovery .form-item-name {
+    text-align: left;
+
+    .description {
+      font-family: $avalon-regular;
+      font-weight: normal;
+      text-align: center;
+      color: #999999;
+      margin-top: 15px;
+    }
+  }
+}

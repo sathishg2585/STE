@@ -1,0 +1,4 @@
+name = FYC
+description = Helper functions to manage FYC site
+package = FYC
+core = 7.x

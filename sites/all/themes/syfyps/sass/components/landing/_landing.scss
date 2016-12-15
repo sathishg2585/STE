@@ -1,0 +1,412 @@
+.syfy-press-logo {
+  background: url('../images/syfy_logo.jpg') 0px 0px no-repeat;
+  display: inline-block;
+  margin-top: 40px;
+  height: 75px;
+  width: 140px;
+}
+
+.syfy-homepage-single-project-wrapper,
+.syfy-press-homepage-multi-row {
+  position: relative;
+}
+
+.sy-fy-press-single-homepage {
+  .syfy-homepage-single-project-wrapper {
+    text-align: center;
+    min-height: 1080px;
+    background-size: cover;
+    background-position: center !important;
+
+    .pane-syfy-press-logo {
+      margin-bottom: 560px;
+    }
+
+    .pane-node-field-press-kit-logo {
+      position: absolute;
+      bottom: 395px;
+      left: 50%;
+      -webkit-transform: translate(-50%);
+      transform: translate(-50%);
+      max-width: 45%;
+    }
+
+    .pane-syfy-press-enter-label {
+      margin-top: 15px;
+    }
+  }
+}
+
+.sy-fy-press-multi-homepage {
+  .panel-display {
+    background-color: white;
+    text-align: center;
+  }
+
+  .syfy-homepage-header {
+    max-width: 1000px;
+    margin: 0 auto;
+
+    .syfy-press-logo {
+      margin-top: 35px;
+      background-size: 120px 120px;
+      background-position: 0px -60px;
+      width: 120px;
+      height: 65px;
+    }
+
+    .field-name-field-press-kit-intro-text {
+      font-family: 'Syfy-Regular';
+      font-size: 28px;
+      line-height: 38px;
+      color: $purple_main;
+      margin: 0 0 30px 0;
+      max-width: 1000px;
+    }
+  }
+
+  .view-langing-page-projects {
+    max-width: 1000px;
+    margin: 0 auto;
+    margin-bottom: 165px;
+
+    .syfy-press-homepage-multi-row {
+      margin-bottom: 4px;
+      padding: 35% 40px 0 40px;
+      text-align: center;
+      background-size: cover;
+      position: relative;
+
+      .views-field-field-press-kit-logo {
+        position: absolute;
+        bottom: 17%;
+        left: 50%;
+        -webkit-transform: translate(-50%);
+        transform: translate(-50%);
+        max-width: 50%;
+
+        img {
+          max-width: 70%;
+        }
+      }
+
+      .enter-site-label {
+        position: absolute;
+        bottom: 15px;
+        text-align: center;
+        width: 92%;
+      }
+    }
+  }
+}
+
+.sy-fy-press-single-homepage .pane-node-field-press-kit-date-text,
+.sy-fy-press-single-homepage .pane-node-field-press-kit-date-date,
+.sy-fy-press-multi-homepage .views-field-field-press-kit-date-text,
+.sy-fy-press-multi-homepage .views-field-field-press-kit-date-date {
+  color: $white;
+}
+
+.sy-fy-press-multi-homepage .views-field-field-press-kit-date-text,
+.sy-fy-press-multi-homepage .views-field-field-press-kit-date-date {
+  clear: right;
+  position: absolute;
+  right: 3%;
+}
+
+.sy-fy-press-single-homepage .field-name-field-press-kit-date-text,
+.sy-fy-press-multi-homepage .views-field-field-press-kit-date-text {
+  font-family: 'Syfy-Bold';
+  text-transform: uppercase;
+}
+
+.sy-fy-press-single-homepage .field-name-field-press-kit-date-text {
+  font-size: 12px;
+  line-height: 20px;
+  letter-spacing: 1.4px;
+}
+
+.sy-fy-press-multi-homepage .views-field-field-press-kit-date-text {
+  font-size: 12px;
+  line-height: 18px;
+  top: 7%;
+  letter-spacing: 1px;
+}
+
+.sy-fy-press-single-homepage .field-name-field-press-kit-date-date,
+.sy-fy-press-multi-homepage .views-field-field-press-kit-date-date {
+  font-family: 'Syfy-Medium';
+  letter-spacing: -0.6px;
+}
+
+.sy-fy-press-single-homepage .field-name-field-press-kit-date-date {
+  font-size: 24px;
+  line-height: 32px;
+}
+
+.sy-fy-press-multi-homepage .views-field-field-press-kit-date-date {
+  font-size: 24px;
+  line-height: 28px;
+  top: 13%;
+}
+
+.enter-site-label {
+  .syfy-press-enter-site-label {
+    border: 2px solid $white;
+    color: $white;
+    display: inline-block;
+    font-family: 'Syfy-Bold';
+    line-height: 24px;
+    text-transform: uppercase;
+    letter-spacing: 1.3px;
+  }
+}
+
+.sy-fy-press-single-homepage {
+  .enter-site-label {
+    .syfy-press-enter-site-label {
+      font-size: 14px;
+      padding: 9px 16px;
+    }
+  }
+}
+
+.sy-fy-press-multi-homepage {
+  .enter-site-label {
+    .syfy-press-enter-site-label {
+      font-size: 12px;
+      padding: 6px 14px;
+    }
+  }
+}
+
+.syfy-pres-row-link {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  left: 0;
+  top: 0;
+  z-index: 10;
+}
+
+.syfy-homepage-single-project-wrapper.syfy-logo-block-midway {
+  .pane-syfy-press-logo {
+    margin-bottom: 0px;
+    float: right;
+    width: 49.9%;
+    height: 55px;
+    text-align: left;
+    position: relative;
+    top: 700px;
+    border-left: 1px solid $white;
+
+    .syfy-press-logo {
+      height: 50px;
+      width: 140px;
+      margin-left: 15px;
+      margin-top: 3px;
+      background-size: 90px 100px;
+    }
+  }
+  .pane-syfy-press-logo.syfy-press-logo-center {
+    width: 100%;
+    text-align: center;
+    border: 0px;
+    .syfy-press-logo {
+      margin: 0px;
+      width: 91px;
+    }
+  }
+
+  .pane-node-field-press-kit-logo {
+    max-width: 45%;
+    height: 150px;
+
+    .field-name-field-press-kit-logo {
+      height: 150px;
+
+      img {
+        height: 150px;
+      }
+    }
+  }
+
+  .pane-node-field-press-kit-date-text, 
+  .pane-node-field-press-kit-date-date {
+    width: 50%;
+    float: left;
+    text-align: right;
+    position: relative;
+    top: 700px;
+
+    .field-name-field-press-kit-date-text,
+    .field-name-field-press-kit-date-date {
+      margin-right: 15px;
+    }
+  }
+
+  .pane-syfy-press-enter-label {
+    position: relative;
+    top: 720px;
+    margin-top: 0px;
+    width: 100%;
+    float: left;    
+  }
+}
+
+/*----------- Tablets -------------*/
+@media #{$tablet-only} {
+  .sy-fy-press-single-homepage {
+    max-height: 1280px;
+
+    .syfy-homepage-single-project-wrapper {
+      min-height: 1280px;
+
+      .pane-syfy-press-logo {
+        margin-bottom: 540px;
+      }
+
+      .pane-node-field-press-kit-logo {
+        bottom: 615px;
+
+        img {
+          width: 70%;
+        }
+      }
+
+      .pane-syfy-press-enter-label {
+        margin-top: 25px;
+      }
+    }
+
+    .syfy-homepage-single-project-wrapper.syfy-logo-block-midway {
+
+      .pane-syfy-press-logo {
+        width: 49.6%;
+        margin-bottom: 0px;
+        top: 670px;
+
+        .syfy-press-logo {
+          background-size: 80px 90px;
+          height: 45px;
+          margin-top: 6px;
+        }
+      }
+      .pane-syfy-press-logo.syfy-press-logo-center {
+        width: 100%;
+        text-align: center;
+        border: 0px;
+        .syfy-press-logo {
+          margin: 0px;
+          width: 91px;
+        }
+      }
+      .pane-node-field-press-kit-logo {
+        height: 130px;
+
+        .field-name-field-press-kit-logo {
+          height: 130px;
+
+          img {
+            height: 130px;
+            width: 100%;
+          }
+        }
+      }
+
+      .pane-node-field-press-kit-date-text, 
+      .pane-node-field-press-kit-date-date {
+        top: 670px;
+      }
+
+      .field-name-field-press-kit-date-text {
+        font-size: 10px;
+      }
+
+      .field-name-field-press-kit-date-date {
+        font-size: 22px;
+      }
+      
+      .pane-syfy-press-enter-label {
+        margin-top: 0px;
+        top: 685px;
+
+        .syfy-press-enter-site-label {
+          font-size: 12px;
+          padding: 7px 14px;
+        }
+      }
+
+    }
+  }
+
+  .sy-fy-press-multi-homepage {
+    .view-langing-page-projects .syfy-press-homepage-multi-row .views-field-field-press-kit-logo {
+      bottom: 20%
+    }
+  }
+}
+
+@media #{$apple-only} {
+  .sy-fy-press-single-homepage {
+    max-height: 1024px;
+
+    .syfy-homepage-single-project-wrapper {
+      min-height: 1024px;
+
+      .pane-node-field-press-kit-logo {
+        bottom: 360px;
+
+        img {
+          width: 70%;
+        }
+      }
+    }
+  }
+}
+
+/*----------- Portable Fix For Single HP For Apple Tablets In Landscape -------------*/
+@media #{$apple-landscape} {
+  .sy-fy-press-single-homepage {
+    max-height: 768px;
+
+    .syfy-homepage-single-project-wrapper {
+      min-height: 768px;
+
+      .pane-syfy-press-logo {
+        margin-bottom: 460px;
+      }
+
+      .pane-node-field-press-kit-logo {
+        bottom: 185px;
+
+        img {
+          width: 70%;
+        }
+      }
+    }
+
+    .syfy-homepage-single-project-wrapper.syfy-logo-block-midway {
+
+      .pane-syfy-press-logo {
+        margin-bottom: 0px;
+      }
+
+      .pane-node-field-press-kit-logo {
+        bottom: 0px;
+      }
+    }
+  }
+}
+
+/*----------- Portable Fix For Multi HP -------------*/
+@media #{$portable-only} {
+  .sy-fy-press-multi-homepage .views-field-field-press-kit-date-text {
+    font-size: 11px;
+  }
+
+  .sy-fy-press-multi-homepage .views-field-field-press-kit-date-date {
+    font-size: 22px;
+    top: 13.5%;
+  }
+}

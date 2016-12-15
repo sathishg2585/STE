@@ -1,0 +1,138 @@
+[
+    {
+        "name": "zendframework/zend-math",
+        "version": "dev-master",
+        "version_normalized": "9999999-dev",
+        "target-dir": "Zend/Math",
+        "source": {
+            "type": "git",
+            "url": "https://github.com/zendframework/Component_ZendMath.git",
+            "reference": "release-2.2.2"
+        },
+        "dist": {
+            "type": "zip",
+            "url": "https://api.github.com/repos/zendframework/Component_ZendMath/zipball/release-2.2.2",
+            "reference": "release-2.2.2",
+            "shasum": ""
+        },
+        "require": {
+            "php": ">=5.3.3"
+        },
+        "suggest": {
+            "ircmaxell/random-lib": "Fallback random byte generator for Zend\\Math\\Rand if OpenSSL/Mcrypt extensions are unavailable"
+        },
+        "time": "2013-05-01 21:53:31",
+        "type": "library",
+        "extra": {
+            "branch-alias": {
+                "dev-master": "2.2-dev",
+                "dev-develop": "2.3-dev"
+            }
+        },
+        "installation-source": "source",
+        "autoload": {
+            "psr-0": {
+                "Zend\\Math\\": ""
+            }
+        },
+        "notification-url": "https://packagist.org/downloads/",
+        "license": [
+            "BSD-3-Clause"
+        ],
+        "keywords": [
+            "math",
+            "zf2"
+        ]
+    },
+    {
+        "name": "zendframework/zend-servicemanager",
+        "version": "dev-master",
+        "version_normalized": "9999999-dev",
+        "target-dir": "Zend/ServiceManager",
+        "source": {
+            "type": "git",
+            "url": "https://github.com/zendframework/Component_ZendServiceManager.git",
+            "reference": "release-2.2.2"
+        },
+        "dist": {
+            "type": "zip",
+            "url": "https://api.github.com/repos/zendframework/Component_ZendServiceManager/zipball/release-2.2.2",
+            "reference": "release-2.2.2",
+            "shasum": ""
+        },
+        "require": {
+            "php": ">=5.3.3"
+        },
+        "suggest": {
+            "zendframework/zend-di": "Zend\\Di component"
+        },
+        "time": "2013-05-08 18:00:17",
+        "type": "library",
+        "extra": {
+            "branch-alias": {
+                "dev-master": "2.2-dev",
+                "dev-develop": "2.3-dev"
+            }
+        },
+        "installation-source": "source",
+        "autoload": {
+            "psr-0": {
+                "Zend\\ServiceManager\\": ""
+            }
+        },
+        "notification-url": "https://packagist.org/downloads/",
+        "license": [
+            "BSD-3-Clause"
+        ],
+        "keywords": [
+            "servicemanager",
+            "zf2"
+        ]
+    },
+    {
+        "name": "zendframework/zend-stdlib",
+        "version": "dev-master",
+        "version_normalized": "9999999-dev",
+        "target-dir": "Zend/Stdlib",
+        "source": {
+            "type": "git",
+            "url": "https://github.com/zendframework/Component_ZendStdlib.git",
+            "reference": "release-2.2.2"
+        },
+        "dist": {
+            "type": "zip",
+            "url": "https://api.github.com/repos/zendframework/Component_ZendStdlib/zipball/release-2.2.2",
+            "reference": "release-2.2.2",
+            "shasum": ""
+        },
+        "require": {
+            "php": ">=5.3.3"
+        },
+        "suggest": {
+            "zendframework/zend-eventmanager": "To support aggregate hydrator usage",
+            "zendframework/zend-servicemanager": "To support hydrator plugin manager usage"
+        },
+        "time": "2013-06-20 18:01:22",
+        "type": "library",
+        "extra": {
+            "branch-alias": {
+                "dev-master": "2.2-dev",
+                "dev-develop": "2.3-dev"
+            }
+        },
+        "installation-source": "source",
+        "autoload": {
+            "psr-0": {
+                "Zend\\Stdlib\\": ""
+            }
+        },
+        "notification-url": "https://packagist.org/downloads/",
+        "license": [
+            "BSD-3-Clause"
+        ],
+        "keywords": [
+            "stdlib",
+            "zf2"
+        ]
+    }
+]

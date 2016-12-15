@@ -1,0 +1,7 @@
+name = Chiller Press Core
+description = Core module for Chiller Press Site
+core = 7.x
+version = 7.x-1.0
+
+dependencies[] = syfy_press_core
+dependencies[] = chiller_press_overrides

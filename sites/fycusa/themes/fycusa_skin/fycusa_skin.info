@@ -1,0 +1,10 @@
+screenshot  = screenshot.png
+name        = FYC USA Skin
+description = FYC USA Theme
+core        = 7.x
+base theme  = fycskin
+
+stylesheets[all][] = css/fycusa_styles.css
+
+scripts[] = js/jquery.videoloader.js
+scripts[] = js/usa.js

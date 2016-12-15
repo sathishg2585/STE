@@ -1,0 +1,23 @@
+language: php
+php:
+  - 5.3
+before_install:
+- pear channel-discover pear.drush.org
+- pear install drush/drush-6.0.0RC1
+- pear install pear/PHP_CodeSniffer
+- phpenv rehash
+- drush --version
+- drush dl coder --destination=/home/travis/.drush
+- drush cache-clear drush
+- cd ..
+- mv rebuild /home/travis/.drush/
+- wget http://ftp.drupal.org/files/projects/drush-8.x-6.0-rc1.tar.gz
+- tar -zxvf drush-8.x-6.0-rc1.tar.gz
+- mv drush /home/travis/
+before_script:
+- cd /home/travis/.drush/rebuild
+script:
+- drush drupalcs rebuild.drush.inc
+- drush drupalcs includes
+- drush drupalcs tests
+- phpunit --bootstrap=/home/travis/drush/tests/drush_testcase.inc /home/travis/.drush/rebuild/tests/rebuildTest.php

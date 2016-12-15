@@ -1,0 +1,247 @@
+<?php
+
+/**
+ * Implements hook_install().
+ */
+function syfy_press_core_install() {
+  db_update('system')
+    ->fields(array('status' => 0))
+    ->condition('name', 'pub_media')
+    ->execute();
+  db_update('system')
+    ->fields(array('status' => 0))
+    ->condition('name', 'pub_files')
+    ->execute();
+  syfy_press_core_disable_features();
+  syfy_press_core_disable_modules();
+  syfy_press_core_delete_unused_content_types();
+  syfy_press_core_create_menu_items();
+}
+
+/**
+ * Implements hook_uninstall().
+ */
+function syfy_press_core_uninstall() {
+  syfy_press_core_delete_menu_items_taxonomy();
+}
+
+/**
+ * Delete unused content types.
+ */
+function syfy_press_core_update_7001() {
+  syfy_press_core_disable_features();
+  syfy_press_core_disable_modules();
+  syfy_press_core_delete_unused_content_types();
+}
+
+/**
+ * Delete unused fields.
+ */
+function syfy_press_core_update_7002() {
+  field_delete_field('field_press_kit_multi_bg');
+  field_purge_batch(1);
+}
+
+/**
+ * Delete unused from file image.
+ */
+function syfy_press_core_update_7003() {
+  field_delete_field('field_file_image_alt_text');
+  field_delete_field('field_file_image_title_text');
+  field_delete_field('field_source');
+  field_delete_field('field_credit');
+  field_delete_field('field_copyright');
+  field_delete_field('field_keywords');
+  field_purge_batch(1);
+}
+
+
+/**
+ * Disable modules.
+ */
+function syfy_press_core_update_7005() {
+  $disable = array(
+    'node_clone',
+    'oauth',
+    'dart_scheduler',
+    'location',
+    'readonlymode',
+  );
+  module_disable($disable);
+  drupal_uninstall_modules($disable);
+}
+
+/**
+ * Disable modules.
+ */
+function syfy_press_core_update_7006() {
+  $disable = array(
+    'clone',
+  );
+  module_disable($disable);
+  drupal_uninstall_modules($disable);
+}
+
+
+/**
+ * Delete taxonomy.
+ */
+function syfy_press_core_update_7004() {
+  foreach (taxonomy_vocabulary_load_multiple(FALSE) as $vocab) {
+    if (!in_array($vocab->machine_name, array(SYFY_PRESS_MENU_ITEMS_VOCABULARY, 'menu_items', 'media_categories', 'media_tags'))) {
+      taxonomy_vocabulary_delete($vocab->vid);
+    }
+  }
+}
+
+/**
+ * Enable colorfield module.
+ */
+function syfy_press_core_update_7007() {
+  $enable = array(
+    'colorfield',
+    'colorfield_minicolors',
+  );
+  module_enable($enable);
+}
+
+/**
+ * Enable editorial module.
+ */
+function syfy_press_core_update_7008() {
+  $enable = array(
+    'syfy_press_editorial',
+  );
+  module_enable($enable);
+}
+
+/**
+ * Delete unused content types.
+ */
+function syfy_press_core_delete_unused_content_types() {
+  $types = array(
+    'character_profile',
+    'media_gallery',
+    'movie',
+    'person',
+    'tv_episode',
+    'tv_season',
+    'tv_show',
+  );
+
+  foreach($types as $type) {
+    node_type_delete($type);
+    variable_del('node_preview_' . $type);
+  }
+  drupal_set_message('Executed ' . __FUNCTION__);
+
+  node_types_rebuild();
+  menu_rebuild();
+}
+
+/**
+ * Uninstall unused features.
+ */
+function syfy_press_core_disable_features() {
+  $all_list = features_get_features();
+  $disable = array();
+
+  foreach ($all_list as $name => $feature) {
+    if ((strpos($name, 'pub_') === 0) || (strpos($name, 'feature_pub_') === 0)) {
+      $disable[] = $name;
+    }
+  }
+  module_disable($disable);
+  drupal_uninstall_modules($disable);
+  drupal_set_message('Executed ' . __FUNCTION__);
+}
+
+/**
+ * Uninstall unused features.
+ */
+function syfy_press_core_disable_modules() {
+  $disable = array(
+    'state_machine',
+    'workbench',
+    'amazons3',
+    'acquia_connector',
+    'composer_manager',
+    'dart',
+    'encrypt',
+    'esi',
+    'fb',
+    'file_entity_revisions',
+    'file_lock',
+    'globalredirect',
+    'media_theplatform_mpx',
+    'metatag',
+    'node_clone',
+    'nodequeue',
+    'oauth',
+    'queues',
+    'redirect',
+    'revision_scheduler',
+    'securepages',
+    'simple_exif',
+    'auto_nodetitle',
+    'diff',
+    'dynamic_queue',
+    'status_watchdog',
+    'twitter',
+    'workbench_workflows',
+    'sps',
+    'pub_relationships',
+    'pub_relationships_tv_enhanced',
+    'pub_analytics',
+    'sitecatalyst',
+    'pixelman',
+    'node_clone',
+    'oauth',
+    'dart_scheduler',
+    'location',
+    'readonlymode',
+    'clone',
+  );
+
+  module_disable($disable);
+  drupal_uninstall_modules($disable);
+  drupal_set_message('Executed ' . __FUNCTION__);
+}
+
+function syfy_press_core_create_menu_items() {
+  module_load_include('module', 'syfy_press_core');
+  $t = get_t();
+  $terms = array(
+    'press_materials' => 'Press Materials',
+    'photos' => 'Photos',
+    'video' => 'Videos',
+    'links' => 'Links',
+    'contacts' => 'Contacts',
+  );
+  $weight = 0;
+
+  $vocabulary = taxonomy_vocabulary_machine_name_load(SYFY_PRESS_MENU_ITEMS_VOCABULARY);
+
+  foreach($terms as $key => $title) {
+    $terms_default[$key] = array(
+      'name' => $t('!title', array('!title' => $title)),
+      'vid' => $vocabulary->vid,
+      'parent' => 0,
+      'weight' => $weight,
+    );
+    $weight++;
+  }
+
+  foreach ($terms_default as $term) {
+    $term = (object) $term;
+    taxonomy_term_save($term);
+  }
+}
+
+function syfy_press_core_delete_menu_items_taxonomy() {
+  module_load_include('module', 'syfy_press_core');
+  $vocabulary = taxonomy_vocabulary_machine_name_load(SYFY_PRESS_MENU_ITEMS_VOCABULARY);
+  foreach (taxonomy_get_tree($vocabulary->vid) as $term) {
+    taxonomy_term_delete($term->tid);
+  }
+}

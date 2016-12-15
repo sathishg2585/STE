@@ -1,0 +1,4 @@
+name = Syfy Press Editorial
+description = Editorial specific functionality
+core = 7.x
+version = 7.x-1.0

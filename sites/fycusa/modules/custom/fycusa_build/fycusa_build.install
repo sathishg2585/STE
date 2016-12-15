@@ -1,0 +1,202 @@
+<?php
+
+/**
+ * Implements hook_install().
+ */
+function fycusa_build_install() {
+  db_update('system')
+    ->fields(array('status' => 0))
+    ->condition('name', 'pub_media')
+    ->execute();
+  db_update('system')
+    ->fields(array('status' => 0))
+    ->condition('name', 'pub_files')
+    ->execute();
+  fycusa_build_disable_features();
+  fycusa_build_disable_modules();
+  fycusa_build_delete_unused_content_types();
+  fycusa_build_create_menu_items();
+  fycusa_build_up();
+  
+  // Overriding pathauto default patterns
+  variable_set('pathauto_node_pattern', '');
+  variable_set('pathauto_taxonomy_term_pattern', '');
+
+  // Set Default theme
+  variable_set('theme_default','fycusa_skin');
+}
+
+function fycusa_build_up() {
+  field_delete_field('field_file_image_alt_text');
+  field_delete_field('field_file_image_title_text');
+  field_delete_field('field_source');
+  field_delete_field('field_credit');
+  field_delete_field('field_copyright');
+  field_delete_field('field_keywords');
+  field_purge_batch(1);
+
+  foreach (taxonomy_vocabulary_load_multiple(FALSE) as $vocab) {
+    if (!in_array($vocab->machine_name, array(FYC_MENU_ITEMS_VOCABULARY, 'menu_items', 'media_categories', 'media_tags'))) {
+      taxonomy_vocabulary_delete($vocab->vid);
+    }
+  }
+
+  $enable = array(
+    'colorfield',
+    'colorfield_minicolors',
+  );
+  module_enable($enable);
+}
+
+/**
+ * Uninstall unused features.
+ */
+function fycusa_build_disable_features() {
+  $all_list = features_get_features();
+  $disable = array();
+
+  foreach ($all_list as $name => $feature) {
+    if ((strpos($name, 'pub_') === 0) || (strpos($name, 'feature_pub_') === 0)) {
+      $disable[] = $name;
+    }
+  }
+  module_disable($disable);
+  drupal_uninstall_modules($disable);
+  drupal_set_message('Executed ' . __FUNCTION__);
+}
+
+
+/**
+ * Uninstall unused modules.
+ */
+function fycusa_build_disable_modules() {
+  $disable = array(
+    'state_machine',
+    'workbench',
+    'amazons3',
+    'acquia_connector',
+    'composer_manager',
+    'dart',
+    'encrypt',
+    'esi',
+    'fb',
+    'file_entity_revisions',
+    'file_lock',
+    'globalredirect',
+    'media_theplatform_mpx',
+    'metatag',
+    'node_clone',
+    'nodequeue',
+    'oauth',
+    'queues',
+    'redirect',
+    'revision_scheduler',
+    'securepages',
+    'simple_exif',
+    'auto_nodetitle',
+    'diff',
+    'dynamic_queue',
+    'status_watchdog',
+    'twitter',
+    'workbench_workflows',
+    'sps',
+    'pub_relationships',
+    'pub_relationships_tv_enhanced',
+    'pub_analytics',
+    'sitecatalyst',
+    'pixelman',
+    'node_clone',
+    'oauth',
+    'dart_scheduler',
+    'location',
+    'readonlymode',
+    'clone',
+  );
+
+  module_disable($disable);
+  drupal_uninstall_modules($disable);
+  drupal_set_message('Executed ' . __FUNCTION__);
+}
+
+
+/**
+ * Delete unused content types.
+ */
+function fycusa_build_delete_unused_content_types() {
+  $types = array(
+    'character_profile',
+    'media_gallery',
+    'movie',
+    'person',
+    'tv_episode',
+    'tv_season',
+    'tv_show',
+  );
+
+  foreach($types as $type) {
+    node_type_delete($type);
+    variable_del('node_preview_' . $type);
+  }
+  drupal_set_message('Executed ' . __FUNCTION__);
+
+  node_types_rebuild();
+  menu_rebuild();
+}
+
+/*
+ * Create Menu Item
+ */
+function fycusa_build_create_menu_items() {
+  module_load_include('module', 'fycusa_build');
+  $t = get_t();
+  $terms = array(
+    'series_overview' => 'Series Overview',
+    'video' => 'Video',
+    'fyc' => 'FYC',
+  );
+  $weight = 0;
+
+  $vocabulary = taxonomy_vocabulary_machine_name_load(FYC_MENU_ITEMS_VOCABULARY);
+
+  if (!$vocabulary) {
+    $new_vocab = (object) array(
+      'name' => 'Show menu items',
+      'description' => 'Show menu items vocabulary',
+      'machine_name' => FYC_MENU_ITEMS_VOCABULARY,
+    );
+    taxonomy_vocabulary_save($new_vocab);
+    $vocabulary = taxonomy_vocabulary_machine_name_load(FYC_MENU_ITEMS_VOCABULARY);
+  }
+
+  foreach($terms as $key => $title) {
+    $terms_default[$key] = array(
+      'name' => $t('!title', array('!title' => $title)),
+      'vid' => $vocabulary->vid,
+      'parent' => 0,
+      'weight' => $weight,
+    );
+    $weight++;
+  }
+
+  foreach ($terms_default as $term) {
+    $term = (object) $term;
+    taxonomy_term_save($term);
+  }
+}
+/**
+ * Implements hook_uninstall().
+ */
+function fycusa_build_uninstall() {
+  fycusa_build_delete_menu_items_taxonomy();
+}
+
+/*
+ * Delete FYC taxonomy
+ */
+function fycusa_build_delete_menu_items_taxonomy() {
+  module_load_include('module', 'fycusa_build');
+  $vocabulary = taxonomy_vocabulary_machine_name_load(FYC_MENU_ITEMS_VOCABULARY);
+  foreach (taxonomy_get_tree($vocabulary->vid) as $term) {
+    taxonomy_term_delete($term->tid);
+  }
+}

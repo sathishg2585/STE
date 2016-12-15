@@ -1,0 +1,185 @@
+@font-face {
+  font-family: 'itc_avant_garde_pro_mdbold';
+  src: url('../fonts/itcavantgardepro-bold-webfont.eot');
+  src: url('../fonts/itcavantgardepro-bold-webfont.eot?#iefix') format('embedded-opentype'),
+  url('../fonts/itcavantgardepro-bold-webfont.woff') format('woff'),
+  url('../fonts/itcavantgardepro-bold-webfont.ttf') format('truetype'),
+  url('../fonts/itcavantgardepro-bold-webfont.svg#itc_avant_garde_pro_mdbold') format('svg');
+  font-weight: normal;
+  font-style: normal;
+}
+@font-face {
+  font-family: 'itc_avant_garde_gothic_prdemi';
+  src: url('../fonts/itcavantgardepro-demi-webfont.eot');
+  src: url('../fonts/itcavantgardepro-demi-webfont.eot?#iefix') format('embedded-opentype'),
+  url('../fonts/itcavantgardepro-demi-webfont.woff') format('woff'),
+  url('../fonts/itcavantgardepro-demi-webfont.ttf') format('truetype'),
+  url('../fonts/itcavantgardepro-demi-webfont.svg#itc_avant_garde_gothic_prdemi') format('svg');
+  font-weight: normal;
+  font-style: normal;
+}
+@font-face {
+  font-family: 'avalon_mediumbold';
+  src: url('../fonts/Avalon-Bold-webfont.eot');
+  src: url('../fonts/Avalon-Bold-webfont.eot?#iefix') format('embedded-opentype'),
+  url('../fonts/Avalon-Bold-webfont.woff') format('woff'),
+  url('../fonts/Avalon-Bold-webfont.ttf') format('truetype'),
+  url('../fonts/Avalon-Bold-webfont.svg#avalon_mediumbold') format('svg');
+  font-weight: normal;
+  font-style: normal;
+
+}
+@font-face {
+  font-family: 'avalonmedium';
+  src: url('../fonts/Avalon-Medium-webfont.eot');
+  src: url('../fonts/Avalon-Medium-webfont.eot?#iefix') format('embedded-opentype'),
+  url('../fonts/Avalon-Medium-webfont.woff') format('woff'),
+  url('../fonts/Avalon-Medium-webfont.ttf') format('truetype'),
+  url('../fonts/Avalon-Medium-webfont.svg#avalonmedium') format('svg');
+  font-weight: normal;
+  font-style: normal;
+
+}
+@font-face {
+  font-family: 'avalonbold';
+  src: url('../fonts/Avalon-Demi-webfont.eot');
+  src: url('../fonts/Avalon-Demi-webfont.eot?#iefix') format('embedded-opentype'),
+  url('../fonts/Avalon-Demi-webfont.woff') format('woff'),
+  url('../fonts/Avalon-Demi-webfont.ttf') format('truetype'),
+  url('../fonts/Avalon-Demi-webfont.svg#avalonbold') format('svg');
+  font-weight: normal;
+  font-style: normal;
+
+}
+@font-face {
+  font-family: 'avalonmedium_condensed';
+  src: url('../fonts/Avalon-MediumCond-webfont.eot');
+  src: url('../fonts/Avalon-MediumCond-webfont.eot?#iefix') format('embedded-opentype'),
+  url('../fonts/Avalon-MediumCond-webfont.woff') format('woff'),
+  url('../fonts/Avalon-MediumCond-webfont.ttf') format('truetype'),
+  url('../fonts/Avalon-MediumCond-webfont.svg#avalonmedium_condensed') format('svg');
+  font-weight: normal;
+  font-style: normal;
+
+}
+@font-face {
+  font-family: 'avalonmedium_oblique';
+  src: url('../fonts/Avalon-MediumOblique-webfont.eot');
+  src: url('../fonts/Avalon-MediumOblique-webfont.eot?#iefix') format('embedded-opentype'),
+  url('../fonts/Avalon-MediumOblique-webfont.woff') format('woff'),
+  url('../fonts/Avalon-MediumOblique-webfont.ttf') format('truetype'),
+  url('../fonts/Avalon-MediumOblique-webfont.svg#avalonmedium_oblique') format('svg');
+  font-weight: normal;
+  font-style: normal;
+
+}
+@font-face {
+  font-family: 'avalonbold_condensed';
+  src: url('../fonts/Avalon-BoldCond-webfont.eot');
+  src: url('../fonts/Avalon-BoldCond-webfont.eot?#iefix') format('embedded-opentype'),
+  url('../fonts/Avalon-BoldCond-webfont.woff') format('woff'),
+  url('../fonts/Avalon-BoldCond-webfont.ttf') format('truetype'),
+  url('../fonts/Avalon-BoldCond-webfont.svg#avalonbold_condensed') format('svg');
+  font-weight: normal;
+  font-style: normal;
+
+}
+@font-face {
+  font-family: 'avalonbold_oblique';
+  src: url('../fonts/Avalon-BoldOblique-webfont.eot');
+  src: url('../fonts/Avalon-BoldOblique-webfont.eot?#iefix') format('embedded-opentype'),
+  url('../fonts/Avalon-BoldOblique-webfont.woff') format('woff'),
+  url('../fonts/Avalon-BoldOblique-webfont.ttf') format('truetype'),
+  url('../fonts/Avalon-BoldOblique-webfont.svg#avalonbold_oblique') format('svg');
+  font-weight: normal;
+  font-style: normal;
+
+}
+@font-face {
+  font-family: 'avalonbook_condensed';
+  src: url('../fonts/Avalon-BookCond-webfont.eot');
+  src: url('../fonts/Avalon-BookCond-webfont.eot?#iefix') format('embedded-opentype'),
+  url('../fonts/Avalon-BookCond-webfont.woff') format('woff'),
+  url('../fonts/Avalon-BookCond-webfont.ttf') format('truetype'),
+  url('../fonts/Avalon-BookCond-webfont.svg#avalonbook_condensed') format('svg');
+  font-weight: normal;
+  font-style: normal;
+
+}
+@font-face {
+  font-family: 'avalonitalic';
+  src: url('../fonts/Avalon-BookOblique-webfont.eot');
+  src: url('../fonts/Avalon-BookOblique-webfont.eot?#iefix') format('embedded-opentype'),
+  url('../fonts/Avalon-BookOblique-webfont.woff') format('woff'),
+  url('../fonts/Avalon-BookOblique-webfont.ttf') format('truetype'),
+  url('../fonts/Avalon-BookOblique-webfont.svg#avalonitalic') format('svg');
+  font-weight: normal;
+  font-style: normal;
+
+}
+@font-face {
+  font-family: 'avalondemi_condensed';
+  src: url('../fonts/Avalon-DemiCond-webfont.eot');
+  src: url('../fonts/Avalon-DemiCond-webfont.eot?#iefix') format('embedded-opentype'),
+  url('../fonts/Avalon-DemiCond-webfont.woff') format('woff'),
+  url('../fonts/Avalon-DemiCond-webfont.ttf') format('truetype'),
+  url('../fonts/Avalon-DemiCond-webfont.svg#avalondemi_condensed') format('svg');
+  font-weight: normal;
+  font-style: normal;
+
+}
+@font-face {
+  font-family: 'avalonbold_italic';
+  src: url('../fonts/Avalon-DemiOblique-webfont.eot');
+  src: url('../fonts/Avalon-DemiOblique-webfont.eot?#iefix') format('embedded-opentype'),
+  url('../fonts/Avalon-DemiOblique-webfont.woff') format('woff'),
+  url('../fonts/Avalon-DemiOblique-webfont.ttf') format('truetype'),
+  url('../fonts/Avalon-DemiOblique-webfont.svg#avalonbold_italic') format('svg');
+  font-weight: normal;
+  font-style: normal;
+
+}
+@font-face {
+  font-family: 'avalonextra_light';
+  src: url('../fonts/Avalon-XLight-webfont.eot');
+  src: url('../fonts/Avalon-XLight-webfont.eot?#iefix') format('embedded-opentype'),
+  url('../fonts/Avalon-XLight-webfont.woff') format('woff'),
+  url('../fonts/Avalon-XLight-webfont.ttf') format('truetype'),
+  url('../fonts/Avalon-XLight-webfont.svg#avalonextra_light') format('svg');
+  font-weight: normal;
+  font-style: normal;
+
+}
+@font-face {
+  font-family: 'avalonextra_light_oblique';
+  src: url('../fonts/Avalon-XLightObl-webfont.eot');
+  src: url('../fonts/Avalon-XLightObl-webfont.eot?#iefix') format('embedded-opentype'),
+  url('../fonts/Avalon-XLightObl-webfont.woff') format('woff'),
+  url('../fonts/Avalon-XLightObl-webfont.ttf') format('truetype'),
+  url('../fonts/Avalon-XLightObl-webfont.svg#avalonextra_light_oblique') format('svg');
+  font-weight: normal;
+  font-style: normal;
+
+}
+@font-face {
+  font-family: 'avalonregular';
+  src: url('../fonts/Avalon-Book-webfont.eot');
+  src: url('../fonts/Avalon-Book-webfont.eot?#iefix') format('embedded-opentype'),
+  url('../fonts/Avalon-Book-webfont.woff') format('woff'),
+  url('../fonts/Avalon-Book-webfont.ttf') format('truetype'),
+  url('../fonts/Avalon-Book-webfont.svg#avalonregular') format('svg');
+  font-weight: normal;
+  font-style: normal;
+
+}
+
+//=================================
+
+$avalon-regular : 'avalonregular', Helvetica, Arial, sans-serif;
+$avalon-medium : 'avalonmedium', Helvetica, Arial, sans-serif;
+$avalon-bold : 'avalonbold', Helvetica, Arial, sans-serif;
+$avalon-xlight : 'avalonextra_light', Helvetica, Arial, sans-serif;
+$avalon-bold-italic : 'avalonextra_light', Helvetica, Arial, sans-serif;
+
+$avantgarde-bold : 'itc_avant_garde_pro_mdbold', Helvetica, Arial, sans-serif;
+$avantgarde-demi : 'itc_avant_garde_gothic_prdemi', Helvetica, Arial, sans-serif;

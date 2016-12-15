@@ -1,0 +1,1749 @@
+<?php
+
+/**
+ * Implements hook_ctools_plugin_directory().
+ */
+function usanetwork_press_ctools_plugin_directory($owner, $plugin_type) {
+
+  if ($owner == 'ctools' && ($plugin_type == 'content_types' || $plugin_type == 'access')) {
+    return 'plugins/' . $plugin_type;
+  }
+}
+
+
+/**
+ * Implements hook_menu().
+ */
+function usanetwork_press_menu() {
+  $items['usanetwork/preview/%'] = array(
+    'page callback' => 'usanetwork_press_preview',
+    'page arguments' => array(2),
+    'access arguments' => array('access content'),
+    'type' => MENU_CALLBACK,
+  );
+
+  $items['admin/config/usanetwork_press'] = array(
+    'title' => 'USA Network Press',
+    'position' => 'right',
+    'page callback' => 'system_admin_menu_block_page',
+    'access arguments' => array('access administration pages'),
+    'file' => 'system.admin.inc',
+    'file path' => drupal_get_path('module', 'system'),
+  );
+
+  $items['admin/config/usanetwork_press/usanetwork_error_pages'] = array(
+    'title' => 'USA Network Press error pages',
+    'description' =>  'Configure USA Network Press error pages.',
+    'page callback' => 'drupal_get_form',
+    'page arguments' => array('usanetwork_press_error_pages_callback'),
+    'access arguments' => array('administer error pages'),
+  );
+
+  $items['node/%node/menu'] = array(
+    'title' => 'USA Network Press taxonomy',
+    'title callback' => 'usanetwork_press_term_list_title',
+    'title arguments' => array(1),
+    'page callback' => 'drupal_get_form',
+    'page arguments' => array('usanetwork_press_taxonomy_list', 1),
+    'access arguments' => array('administer taxonomy') ,
+  );
+  return $items;
+}
+
+function usanetwork_press_term_list_title($node) {
+  return 'Manage menu for ' . $node->title;
+}
+
+/**
+ * Implements hook_admin_paths().
+ */
+function usanetwork_press_admin_paths() {
+  $paths = array(
+    'node/*/menu' => TRUE,
+  );
+  return $paths;
+}
+
+/**
+ * Override taxonomy listing.
+ */
+function usanetwork_press_taxonomy_list($form, &$form_state, $node) {
+  global $pager_page_array, $pager_total, $pager_total_items;
+  if ($node->type != 'press_kit') {
+    drupal_access_denied();
+  }
+  $node_wrapper = entity_metadata_wrapper('node', $node);
+  $project_term = $node_wrapper->{'field_press_kit_tax_item'}->value();
+  if (empty($project_term)) {
+    drupal_access_denied();
+  }
+  $vocabulary = taxonomy_vocabulary_load($project_term->vid);
+
+  // Check for confirmation forms.
+  if (isset($form_state['confirm_reset_alphabetical'])) {
+    return taxonomy_vocabulary_confirm_reset_alphabetical($form, $form_state, $vocabulary->vid);
+  }
+
+  $form['#vocabulary'] = $vocabulary;
+  $form['#tree'] = TRUE;
+  $form['#parent_fields'] = FALSE;
+
+  $page            = isset($_GET['page']) ? $_GET['page'] : 0;
+  $page_increment  = variable_get('taxonomy_terms_per_page_admin', 100);  // Number of terms per page.
+  $page_entries    = 0;   // Elements shown on this page.
+  $before_entries  = 0;   // Elements at the root level before this page.
+  $after_entries   = 0;   // Elements at the root level after this page.
+  $root_entries    = 0;   // Elements at the root level on this page.
+
+  // Terms from previous and next pages are shown if the term tree would have
+  // been cut in the middle. Keep track of how many extra terms we show on each
+  // page of terms.
+  $back_step    = NULL;
+  $forward_step = 0;
+
+  // An array of the terms to be displayed on this page.
+  $current_page = array();
+
+  $delta = 0;
+  $term_deltas = array();
+  $tree = taxonomy_get_tree($vocabulary->vid, $project_term->tid);
+  $term = current($tree);
+  do {
+    // In case this tree is completely empty.
+    if (empty($term)) {
+      break;
+    }
+    $delta++;
+    // Count entries before the current page.
+    if ($page && ($page * $page_increment) > $before_entries && !isset($back_step)) {
+      $before_entries++;
+      continue;
+    }
+    // Count entries after the current page.
+    elseif ($page_entries > $page_increment && isset($complete_tree)) {
+      $after_entries++;
+      continue;
+    }
+
+    // Do not let a term start the page that is not at the root.
+    if (isset($term->depth) && ($term->depth > 0) && !isset($back_step)) {
+      $back_step = 0;
+      while ($pterm = prev($tree)) {
+        $before_entries--;
+        $back_step++;
+        if ($pterm->depth == 0) {
+          prev($tree);
+          continue 2; // Jump back to the start of the root level parent.
+        }
+      }
+    }
+    $back_step = isset($back_step) ? $back_step : 0;
+
+    // Continue rendering the tree until we reach the a new root item.
+    if ($page_entries >= $page_increment + $back_step + 1 && $term->depth == 0 && $root_entries > 1) {
+      $complete_tree = TRUE;
+      // This new item at the root level is the first item on the next page.
+      $after_entries++;
+      continue;
+    }
+    if ($page_entries >= $page_increment + $back_step) {
+      $forward_step++;
+    }
+
+    // Finally, if we've gotten down this far, we're rendering a term on this page.
+    $page_entries++;
+    $term_deltas[$term->tid] = isset($term_deltas[$term->tid]) ? $term_deltas[$term->tid] + 1 : 0;
+    $key = 'tid:' . $term->tid . ':' . $term_deltas[$term->tid];
+
+    // Keep track of the first term displayed on this page.
+    if ($page_entries == 1) {
+      $form['#first_tid'] = $term->tid;
+    }
+    // Keep a variable to make sure at least 2 root elements are displayed.
+    if ($term->parents[0] == 0) {
+      $root_entries++;
+    }
+    $current_page[$key] = $term;
+  } while ($term = next($tree));
+
+  // Because we didn't use a pager query, set the necessary pager variables.
+  $total_entries = $before_entries + $page_entries + $after_entries;
+  $pager_total_items[0] = $total_entries;
+  $pager_page_array[0] = $page;
+  $pager_total[0] = ceil($total_entries / $page_increment);
+
+  // If this form was already submitted once, it's probably hit a validation
+  // error. Ensure the form is rebuilt in the same order as the user submitted.
+  if (!empty($form_state['input'])) {
+    $order = array_flip(array_keys($form_state['input'])); // Get the $_POST order.
+    $current_page = array_merge($order, $current_page); // Update our form with the new order.
+    foreach ($current_page as $key => $term) {
+      // Verify this is a term for the current page and set at the current depth.
+      if (is_array($form_state['input'][$key]) && is_numeric($form_state['input'][$key]['tid'])) {
+        $current_page[$key]->depth = $form_state['input'][$key]['depth'];
+      }
+      else {
+        unset($current_page[$key]);
+      }
+    }
+  }
+
+  // Build the actual form.
+  foreach ($current_page as $key => $term) {
+    // Save the term for the current page so we don't have to load it a second time.
+    $form[$key]['#term'] = (array) $term;
+    if (isset($term->parents)) {
+      $form[$key]['#term']['parent'] = $term->parent = $term->parents[0];
+      unset($form[$key]['#term']['parents'], $term->parents);
+    }
+
+    $form[$key]['view'] = array('#type' => 'link', '#title' => $term->name, '#href' => "taxonomy/term/$term->tid");
+    if ($vocabulary->hierarchy < 2 && count($tree) > 1) {
+      $form['#parent_fields'] = TRUE;
+      $form[$key]['tid'] = array(
+        '#type' => 'hidden',
+        '#value' => $term->tid
+      );
+      $form[$key]['parent'] = array(
+        '#type' => 'hidden',
+        // Yes, default_value on a hidden. It needs to be changeable by the javascript.
+        '#default_value' => $term->parent,
+      );
+      $form[$key]['depth'] = array(
+        '#type' => 'hidden',
+        // Same as above, the depth is modified by javascript, so it's a default_value.
+        '#default_value' => $term->depth,
+      );
+      $form[$key]['weight'] = array(
+        '#type' => 'weight',
+        '#delta' => $delta,
+        '#title_display' => 'invisible',
+        '#title' => t('Weight for added term'),
+        '#default_value' => $term->weight,
+      );
+    }
+    $form[$key]['edit'] = array('#type' => 'link', '#title' => t('edit'), '#href' => 'taxonomy/term/' . $term->tid . '/edit', '#options' => array('query' => drupal_get_destination()));
+  }
+
+  $form['#total_entries'] = $total_entries;
+  $form['#page_increment'] = $page_increment;
+  $form['#page_entries'] = $page_entries;
+  $form['#back_step'] = $back_step;
+  $form['#forward_step'] = $forward_step;
+  $form['#empty_text'] = t('No terms available. <a href="@link">Add term</a>.', array('@link' => url('admin/structure/taxonomy/' . $vocabulary->machine_name . '/add')));
+
+  if ($vocabulary->hierarchy < 2 && count($tree) > 1) {
+    $form['actions'] = array('#type' => 'actions', '#tree' => FALSE);
+    $form['actions']['submit'] = array(
+      '#type' => 'submit',
+      '#value' => t('Save')
+    );
+    $form_state['redirect'] = array($_GET['q'], (isset($_GET['page']) ? array('query' => array('page' => $_GET['page'])) : array()));
+  }
+
+  $link_options = array('query' => array(
+    'destination' => 'node/' . $node->nid . '/menu',
+    'project' => $project_term->tid,
+  ));
+  $form['#prefix'] = $form['#empty_text'] = l('Add term', 'admin/structure/taxonomy/' . $vocabulary->machine_name . '/add', $link_options);
+  $form['#submit'][] = 'usanetwork_press_taxonomy_overview_terms_submit';
+  $form['#submit'][] = 'usanetwork_press_form_taxonomy_overview_terms_submit';
+  return $form;
+}
+
+/**
+ * Submit callback for custom taxonomy form.
+ */
+function usanetwork_press_taxonomy_overview_terms_submit($form, &$form_state) {
+  if ($form_state['triggering_element']['#value'] == t('Reset to alphabetical')) {
+    // Execute the reset action.
+    if ($form_state['values']['reset_alphabetical'] === TRUE) {
+      return taxonomy_vocabulary_confirm_reset_alphabetical_submit($form, $form_state);
+    }
+    // Rebuild the form to confirm the reset action.
+    $form_state['rebuild'] = TRUE;
+    $form_state['confirm_reset_alphabetical'] = TRUE;
+    return;
+  }
+
+  // Sort term order based on weight.
+  uasort($form_state['values'], 'drupal_sort_weight');
+
+  $vocabulary = $form['#vocabulary'];
+  $hierarchy = 0; // Update the current hierarchy type as we go.
+
+  $changed_terms = array();
+  $tree = taxonomy_get_tree($vocabulary->vid);
+
+  if (empty($tree)) {
+    return;
+  }
+
+  // Build a list of all terms that need to be updated on previous pages.
+  $weight = 0;
+  $term = (array) $tree[0];
+  while ($term['tid'] != $form['#first_tid']) {
+    if ($term['parents'][0] == 0 && $term['weight'] != $weight) {
+      $term['parent'] = $term['parents'][0];
+      $term['weight'] = $weight;
+      $changed_terms[$term['tid']] = $term;
+    }
+    $weight++;
+    $hierarchy = $term['parents'][0] != 0 ? 1 : $hierarchy;
+    $term = (array) $tree[$weight];
+  }
+
+  // Renumber the current page weights and assign any new parents.
+  $level_weights = array();
+  foreach ($form_state['values'] as $tid => $values) {
+    if (isset($form[$tid]['#term'])) {
+      $term = $form[$tid]['#term'];
+      // Give terms at the root level a weight in sequence with terms on previous pages.
+      if ($values['parent'] == 0 && $term['weight'] != $weight) {
+        $term['weight'] = $weight;
+        $changed_terms[$term['tid']] = $term;
+      }
+      // Terms not at the root level can safely start from 0 because they're all on this page.
+      elseif ($values['parent'] > 0) {
+        $level_weights[$values['parent']] = isset($level_weights[$values['parent']]) ? $level_weights[$values['parent']] + 1 : 0;
+        if ($level_weights[$values['parent']] != $term['weight']) {
+          $term['weight'] = $level_weights[$values['parent']];
+          $changed_terms[$term['tid']] = $term;
+        }
+      }
+      // Update any changed parents.
+      if ($values['parent'] != $term['parent']) {
+        $term['parent'] = $values['parent'];
+        $changed_terms[$term['tid']] = $term;
+      }
+      $hierarchy = $term['parent'] != 0 ? 1 : $hierarchy;
+      $weight++;
+    }
+  }
+
+  // Build a list of all terms that need to be updated on following pages.
+  for ($weight; $weight < count($tree); $weight++) {
+    $term = (array) $tree[$weight];
+    if ($term['parents'][0] == 0 && $term['weight'] != $weight) {
+      $term['parent'] = $term['parents'][0];
+      $term['weight'] = $weight;
+      $changed_terms[$term['tid']] = $term;
+    }
+    $hierarchy = $term['parents'][0] != 0 ? 1 : $hierarchy;
+  }
+
+  // Save all updated terms.
+  foreach ($changed_terms as $changed) {
+    $term = (object) $changed;
+    // Update term_hierachy and term_data directly since we don't have a
+    // fully populated term object to save.
+    db_update('taxonomy_term_hierarchy')
+      ->fields(array('parent' => $term->parent))
+      ->condition('tid', $term->tid, '=')
+      ->execute();
+
+    db_update('taxonomy_term_data')
+      ->fields(array('weight' => $term->weight))
+      ->condition('tid', $term->tid, '=')
+      ->execute();
+  }
+
+  // Update the vocabulary hierarchy to flat or single hierarchy.
+  if ($vocabulary->hierarchy != $hierarchy) {
+    $vocabulary->hierarchy = $hierarchy;
+    taxonomy_vocabulary_save($vocabulary);
+  }
+  drupal_set_message(t('The configuration options have been saved.'));
+}
+
+/**
+ * Theme function for taxonomy list.
+ */
+function theme_usanetwork_press_taxonomy_list($variables) {
+  $form = $variables['form'];
+
+  $page_increment  = $form['#page_increment'];
+  $page_entries    = $form['#page_entries'];
+  $back_step     = $form['#back_step'];
+  $forward_step  = $form['#forward_step'];
+
+  // Add drag and drop if parent fields are present in the form.
+  if ($form['#parent_fields']) {
+    drupal_add_tabledrag('taxonomy', 'match', 'parent', 'term-parent', 'term-parent', 'term-id', FALSE);
+    drupal_add_tabledrag('taxonomy', 'depth', 'group', 'term-depth', NULL, NULL, FALSE);
+    drupal_add_js(drupal_get_path('module', 'taxonomy') . '/taxonomy.js');
+    drupal_add_js(array('taxonomy' => array('backStep' => $back_step, 'forwardStep' => $forward_step)), 'setting');
+    drupal_add_css(drupal_get_path('module', 'taxonomy') . '/taxonomy.css');
+  }
+  drupal_add_tabledrag('taxonomy', 'order', 'sibling', 'term-weight');
+
+  $errors = form_get_errors() != FALSE ? form_get_errors() : array();
+  $rows = array();
+  foreach (element_children($form) as $key) {
+    if (isset($form[$key]['#term'])) {
+      $term = &$form[$key];
+
+      $row = array();
+      $row[] = (isset($term['#term']['depth']) && $term['#term']['depth'] > 0 ? theme('indentation', array('size' => $term['#term']['depth'])) : ''). drupal_render($term['view']);
+      if ($form['#parent_fields']) {
+        $term['tid']['#attributes']['class'] = array('term-id');
+        $term['parent']['#attributes']['class'] = array('term-parent');
+        $term['depth']['#attributes']['class'] = array('term-depth');
+        $row[0] .= drupal_render($term['parent']) . drupal_render($term['tid']) . drupal_render($term['depth']);
+      }
+      $term['weight']['#attributes']['class'] = array('term-weight');
+      $row[] = drupal_render($term['weight']);
+      $row[] = drupal_render($term['edit']);
+      $row = array('data' => $row);
+      $rows[$key] = $row;
+    }
+  }
+
+  // Add necessary classes to rows.
+  $row_position = 0;
+  foreach ($rows as $key => $row) {
+    $rows[$key]['class'] = array();
+    if (isset($form['#parent_fields'])) {
+      $rows[$key]['class'][] = 'draggable';
+    }
+
+    // Add classes that mark which terms belong to previous and next pages.
+    if ($row_position < $back_step || $row_position >= $page_entries - $forward_step) {
+      $rows[$key]['class'][] = 'taxonomy-term-preview';
+    }
+
+    if ($row_position !== 0 && $row_position !== count($rows) - 1) {
+      if ($row_position == $back_step - 1 || $row_position == $page_entries - $forward_step - 1) {
+        $rows[$key]['class'][] = 'taxonomy-term-divider-top';
+      }
+      elseif ($row_position == $back_step || $row_position == $page_entries - $forward_step) {
+        $rows[$key]['class'][] = 'taxonomy-term-divider-bottom';
+      }
+    }
+
+    // Add an error class if this row contains a form error.
+    foreach ($errors as $error_key => $error) {
+      if (strpos($error_key, $key) === 0) {
+        $rows[$key]['class'][] = 'error';
+      }
+    }
+    $row_position++;
+  }
+
+  if (empty($rows)) {
+    $rows[] = array(array('data' => $form['#empty_text'], 'colspan' => '3'));
+  }
+
+  $header = array(t('Name'), t('Weight'), t('Operations'));
+  $output = theme('table', array('header' => $header, 'rows' => $rows, 'attributes' => array('id' => 'taxonomy')));
+  $output .= drupal_render_children($form);
+  $output .= theme('pager');
+
+  return $output;
+}
+
+
+/**
+ * Menu callback for preview link.
+ */
+function usanetwork_press_preview($token) {
+  if (empty($token)) {
+    return drupal_fast_404();
+  }
+  $query = new EntityFieldQuery();
+  $query->entityCondition('entity_type', 'node')
+    ->entityCondition('bundle', 'press_kit_project')
+    ->fieldCondition('field_press_preview_link', 'value', $token);
+  $result = $query->execute();
+
+  if (!empty($result['node'])) {
+    $node = reset($result['node']);
+    $_SESSION['usanetwork_preview_access'] = $node->nid;
+    drupal_goto('node/' . $node->nid);
+  }
+  else {
+    return drupal_access_denied();
+  }
+}
+
+/**
+ * Implements hook_node_access().
+ */
+function usanetwork_press_node_access($node, $op, $account) {
+  if ($op == 'view') {
+    if (usanetwork_press_check_access($node)) {
+      return NODE_ACCESS_ALLOW;
+    }
+    else {
+      return NODE_ACCESS_DENY;
+    }
+  }
+}
+
+/**
+ * Check access to view node.
+ */
+function usanetwork_press_check_access($node) {
+  global $user;
+
+  if ($user->uid == 0 && $node->status == NODE_NOT_PUBLISHED) {
+    if ($node->type == 'press_kit_project') {
+      if (!empty($_SESSION['usanetwork_preview_access']) && $_SESSION['usanetwork_preview_access'] == $node->nid) {
+        return TRUE;
+      }
+      return FALSE;
+    }
+    elseif ($node->type == 'press_kit') {
+      if (!empty($_SESSION['usanetwork_preview_access'])) {
+        $node_project = node_load($_SESSION['usanetwork_preview_access']);
+        $node_project_wrapper = entity_metadata_wrapper('node', $node_project);
+        $kits = $node_project_wrapper->{'field_press_kit'}->value();
+        foreach ($kits as $kit) {
+          if ($kit->nid == $node->nid) {
+            return TRUE;
+          }
+        }
+      }
+      else {
+        return FALSE;
+      }
+    }
+    else {
+      $node_wrapper = entity_metadata_wrapper('node', $node);
+      $menu_term = $node_wrapper->{'field_menu_position'}->value();
+      if (empty($menu_term)) {
+        return FALSE;
+      }
+
+      $parents = taxonomy_get_parents_all($menu_term->tid);
+      if (count($parents) < 2) {
+        return FALSE;
+      }
+
+      $parent_term = $parents[count($parents)-1];
+
+      $query = new EntityFieldQuery();
+      $query->entityCondition('entity_type', 'node')
+        ->fieldCondition('field_press_kit_tax_item', 'tid', $parent_term->tid);
+      $result = $query->execute();
+      if (!empty($result['node'])) {
+        $node_kit = reset($result['node']);
+
+        if (!empty($_SESSION['usanetwork_preview_access'])) {
+          $node_project = node_load($_SESSION['usanetwork_preview_access']);
+          $node_project_wrapper = entity_metadata_wrapper('node', $node_project);
+          $kits = $node_project_wrapper->{'field_press_kit'}->value();
+          foreach ($kits as $kit) {
+            if ($kit->nid == $node_kit->nid) {
+              return TRUE;
+            }
+          }
+        }
+      }
+      return FALSE;
+    }
+  }
+
+  return TRUE;
+}
+
+/**
+ * Implements hook_rules_event_info().
+ */
+function usanetwork_press_rules_event_info() {
+  $defaults_term = array(
+    'group' => t('USA Network'),
+    'access callback' => 'rules_taxonomy_term_integration_access',
+    'module' => 'taxonomy',
+    'class' => 'RulesTaxonomyEventHandler',
+  );
+
+  return array(
+    'taxonomy_term_view' => $defaults_term + array(
+        'label' => t('After viewing a term'),
+        'variables' => array(
+          'term' => array('type' => 'taxonomy_term', 'label' => t('Viewed term')),
+        ),
+      ),
+  );
+}
+
+/**
+ * Implements hook_taxonomy_term_view().
+ */
+function usanetwork_press_taxonomy_term_view($term, $view_mode, $langcode) {
+  if ($term->vocabulary_machine_name == 'press_kit_items') {
+    rules_invoke_event('taxonomy_term_view', $term);
+  }
+}
+
+/**
+ * Implements hook_module_implements_alter().
+ */
+function usanetwork_press_module_implements_alter(&$implementations, $hook) {
+  if ($hook == 'wysiwyg_editor_settings_alter') {
+    unset($implementations['publisher']);
+  }
+}
+
+function usanetwork_press_theme_registry_alter(&$theme_registry) {
+  if (!empty($theme_registry['inline_entity_form_entity_table'])) {
+    $theme_registry['inline_entity_form_entity_table']['function'] = 'usanetwork_press_inline_entity_form_entity_table';
+  }
+}
+
+/**
+ * Themes the table showing existing entity references in the widget.
+ *
+ * @param $variables
+ *   Contains the form element data from $element['entities'].
+ */
+function usanetwork_press_inline_entity_form_entity_table($variables) {
+  $form = $variables['form'];
+  $entity_type = $form['#entity_type'];
+  $fields = $form['#table_fields'];
+  // Sort the fields by weight.
+  uasort($fields, 'drupal_sort_weight');
+  // If one of the rows is in form context, disable tabledrag.
+  $has_tabledrag = TRUE;
+
+  foreach (element_children($form) as $key) {
+    if (!empty($form[$key]['form']['#processed'])) {
+      $has_tabledrag = FALSE;
+    }
+  }
+
+  $header = array();
+  if ($has_tabledrag) {
+    $header[] = array('data' => '', 'class' => array('ief-tabledrag-header'));
+    $header[] = array('data' => t('Sort order'), 'class' => array('ief-sort-order-header'));
+  }
+  // Add header columns for each field.
+  $first = TRUE;
+  foreach ($fields as $field_name => $field) {
+    $column = array('data' => $field['label']);
+    // The first column gets a special class.
+    if ($first) {
+      $column['class'] = array('ief-first-column-header');
+      $first = FALSE;
+    }
+    $header[] = $column;
+  }
+  $header[] = t('Operations');
+
+  // Build an array of entity rows for the table.
+  $rows = array();
+  foreach (element_children($form) as $key) {
+    if (!empty($form[$key]['#entity'])) {
+      $entity = $form[$key]['#entity'];
+      list($entity_id) = entity_extract_ids($entity_type, $entity);
+      // Many field formatters (such as the ones for files and images) need
+      // certain data that might be missing on unsaved entities because the field
+      // load hooks haven't run yet. Because of that, those hooks are invoked
+      // explicitly. This is the same trick used by node_preview().
+      if ($form[$key]['#needs_save']) {
+        _field_invoke_multiple('load', $entity_type, array($entity_id => $entity));
+      }
+
+      $row_classes = array('ief-row-entity');
+      $cells = array();
+      if ($has_tabledrag) {
+        $cells[] = array(
+          'data' => '',
+          'class' => array('ief-tabledrag-handle')
+        );
+        $cells[] = drupal_render($form[$key]['delta']);
+        $row_classes[] = 'draggable';
+      }
+      // Add a special class to rows that have a form underneath, to allow
+      // for additional styling.
+      if (!empty($form[$key]['form'])) {
+        $row_classes[] = 'ief-row-entity-form';
+      }
+
+      // Add fields that represent the entity.
+      $wrapper = entity_metadata_wrapper($entity_type, $entity);
+      foreach ($fields as $field_name => $field) {
+        $data = '';
+        if ($field['type'] == 'property') {
+          $property = $wrapper->{$field_name};
+          // label() returns human-readable versions of token and list properties.
+          $data = $property->label() ? $property->label() : $property->value();
+          $data = check_plain($data);
+        }
+        elseif ($field['type'] == 'field' && isset($entity->{$field_name})) {
+          $display = array(
+              'label' => 'hidden',
+            ) + $field;
+          // The formatter needs to be under the 'type' key.
+          if (isset($display['formatter'])) {
+            $display['type'] = $display['formatter'];
+            unset($display['formatter']);
+          }
+
+          $renderable_data = field_view_field($entity_type, $entity, $field_name, $display);
+          // The field has specified an exact delta to display.
+          if (isset($field['delta'])) {
+            if (!empty($renderable_data[$field['delta']])) {
+              $renderable_data = $renderable_data[$field['delta']];
+            }
+            else {
+              // The field has no value for the specified delta, show nothing.
+              $renderable_data = array();
+            }
+          }
+          $data = drupal_render($renderable_data);
+        }
+
+        $cells[] = array(
+          'data' => $data,
+          'class' => array('inline-entity-form-' . $entity_type . '-' . $field_name)
+        );
+      }
+      // Add the buttons belonging to the "Operations" column.
+      $cells[] = drupal_render($form[$key]['actions']);
+      // Create the row.
+      $rows[] = array('data' => $cells, 'class' => $row_classes);
+
+      // If the current entity array specifies a form, output it in the next row.
+      if (!empty($form[$key]['form'])) {
+        $row = array(
+          array(
+            'data' => drupal_render($form[$key]['form']),
+            'colspan' => count($fields) + 1
+          ),
+        );
+        $rows[] = array(
+          'data' => $row,
+          'class' => array('ief-row-form'),
+          'no_striping' => TRUE
+        );
+      }
+    }
+  }
+
+  if (!empty($rows)) {
+    $id = 'ief-entity-table-' . $form['#id'];
+    if ($has_tabledrag) {
+      // Add the tabledrag JavaScript.
+      drupal_add_tabledrag($id, 'order', 'sibling', 'ief-entity-delta');
+    }
+
+    // Return the themed table.
+    $table_attributes = array(
+      'id' => $id,
+      'class' => array('ief-entity-table'),
+    );
+    return theme('table', array('header' => $header, 'rows' => $rows, 'sticky' => FALSE, 'attributes' => $table_attributes));
+  }
+}
+
+/**
+ * Implements hook_wysiwyg_editor_settings_alter()
+ */
+function usanetwork_press_wysiwyg_editor_settings_alter(&$settings, $context) {
+  // The $context variable contains information about the wysiwyg profile we're using
+  // In this case we just need to check that the editor being used is ckeditor
+  if ($context['profile']->editor == 'ckeditor')    {
+    // These are our desired groupings. Buttons that aren't listed here will
+    // be grouped in one big group at the end.
+    $preferred_groupings[] = array('Source');
+
+    $preferred_groupings[] = array(
+      'Format',
+      'Undo', 'Redo',
+      'Cut',
+      'Copy',
+      'Paste',
+      'PasteText',
+      'PasteFromWord',
+      'Font',
+      'FontSize',
+      'Styles',
+    );
+
+    $preferred_groupings[] = array('Bold', 'Italic', 'Underline', 'Strike');
+
+    $preferred_groupings[] = array(
+      'JustifyLeft',
+      'JustifyCenter',
+      'JustifyRight',
+      'JustifyBlock',
+    );
+
+    $preferred_groupings[] = array(
+      'BulletedList',
+      'NumberedList',
+      'Outdent',
+      'Indent',
+    );
+
+    $preferred_groupings[] = array('Superscript', 'Subscript', 'Blockquote');
+
+    $preferred_groupings[] = array();
+
+    $preferred_groupings[] = array(
+
+    );
+
+    $preferred_groupings[] = array('Image', 'Link', 'Unlink', 'Anchor', 'Table', '-');
+    $preferred_groupings[] = array('TextColor', 'BGColor');
+
+    $preferred_groupings[] = array('HorizontalRule', 'break');
+    $preferred_groupings[] = array(
+      'ShowBlocks',
+      'RemoveFormat',
+      'SpecialChar',
+      '/',
+    );
+
+    $preferred_groupings[] = array('SelectAll', 'Find', 'Replace');
+    $preferred_groupings[] = array('Flash', 'Smiley');
+    $preferred_groupings[] = array(
+      'CreateDiv',
+      'Maximize',
+      'SpellChecker',
+      'Scayt',
+    );
+
+
+
+    // An array to hold our newly grouped buttons.
+    $new_grouped_toolbar = array();
+
+    // Compare each desired groupings to the configured buttons in the toolbar
+    // and add them if they are there.
+    foreach ($preferred_groupings as $button_group) {
+      $matching_buttons = array_intersect($button_group, $settings['toolbar'][0]);
+
+      if (!empty($matching_buttons)) {
+        $new_grouped_toolbar[] = array_values($matching_buttons);
+      }
+
+    }
+
+    // Find any remaining buttons that we missed.
+    $new_flattened_toolbar = array();
+    foreach ($new_grouped_toolbar as $key => $group) {
+      $new_flattened_toolbar = array_merge($new_flattened_toolbar, $group);
+    }
+    $remaining_buttons = array_diff($settings['toolbar'][0], $new_flattened_toolbar);
+    if (!empty($remaining_buttons)) {
+      // Reset the array keys and add it to the $new_grouped_toolbar.
+      $new_grouped_toolbar[] = array_values($remaining_buttons);
+    }
+
+    // Replace the toolbar with our new, grouped toolbar.
+    $settings['toolbar'] = $new_grouped_toolbar;
+    }
+}
+
+
+/**
+ * Implements hook_wysiwyg_plugin($editor, $version) {().
+ */
+function usanetwork_press_wysiwyg_plugin($editor, $version) {
+  switch ($editor) {
+    case 'ckeditor':
+      if ($version > 3) {
+        return array(
+          'autogrow' => array(
+            'url' => 'http://ckeditor.com/addon/autogrow',
+            'path'  => drupal_get_path('module', 'usanetwork_press') . '/ckeditor/autogrow/',
+            'filename' => 'plugin.js',
+            'load' => TRUE,
+            'extensions' => array('autogrow' => t('AutoGrow plugin')),
+            'options' => array(
+              // This sets some default values you can override in hook_wsiwyg_editor_settings_alter(), or use for hook_form_alter().
+              'autoGrow_maxHeight' => 500,
+              'autoGrow_onStartup' => TRUE,
+            ),
+          ),
+          'justify' => array(
+            'url' => 'http://ckeditor.com/addon/justify',
+            'path'  => drupal_get_path('module', 'usanetwork_press') . '/ckeditor/justify/',
+            'filename' => 'plugin.js',
+            'load' => TRUE,
+            'extensions' => array('justify' => t('Justify plugin')),
+          ),
+          'dragresize' => array(
+            'url' => 'https://github.com/sstur/ck-dragresize',
+            'path'  => drupal_get_path('module', 'usanetwork_press') . '/ckeditor/dragresize/',
+            'filename' => 'plugin.js',
+            'load' => TRUE,
+            'extensions' => array('dragresize' => t('Dragresize plugin')),
+          ),
+        );
+      }
+      break;
+  }
+}
+
+/**
+ * Alter form and set default value for menu field.
+ */
+function usanetwork_press_form_alter(&$form, &$form_state, $form_id) {
+  switch ($form_id) {
+    case 'press_materials_page_node_form':
+    case 'usanetwork_photos_node_form':
+    case 'links_page_node_form':
+    case 'contacts_page_node_form':
+    case 'videos_page_node_form':
+      if (empty($form_state['node']->nid)) {
+        // New node.
+        if (!empty($_GET['project']) && ctype_digit($_GET['project'])) {
+          $project_tid = $_GET['project'];
+          $form['field_menu_position'][LANGUAGE_NONE]['#default_value'] = $project_tid;
+          $form['field_menu_position'][LANGUAGE_NONE]['#process'][] = 'usanetwork_press_hs_taxonomy_widget_process';
+          if (in_array($form_id, array(
+            'links_page_node_form',
+            'contacts_page_node_form'
+          ))) {
+            $form['field_menu_position'][LANGUAGE_NONE]['#access'] = FALSE;
+          }
+          else {
+            $form['field_menu_position'][LANGUAGE_NONE]['#element_validate'][] = 'usanetwork_press_hs_taxonomy_widget_validate';
+          }
+        } else {
+          if (!in_array($form_id, array('links_page_node_form', 'contacts_page_node_form'))) {
+            $form['field_menu_position'][LANGUAGE_NONE]['#element_validate'][] = 'usanetwork_press_hs_taxonomy_widget_validate';
+          }
+        }
+      }
+      else {
+        if (!in_array($form_id, array(
+          'links_page_node_form',
+          'contacts_page_node_form'
+        ))
+        ) {
+          $form['field_menu_position'][LANGUAGE_NONE]['#element_validate'][] = 'usanetwork_press_hs_taxonomy_widget_validate';
+        }
+      }
+
+      if ($form_id == 'links_page_node_form') {
+        $form['#validate'][] = 'usanetwork_press_links_form_validate';
+      }
+
+      if (in_array($form_id, array('links_page_node_form', 'contacts_page_node_form'))) {
+        $form['field_menu_position'][LANGUAGE_NONE]['#process'][] = 'usanetwork_press_links_contacts_hs_process';
+        $form['field_menu_position'][LANGUAGE_NONE]['#element_validate'][] = 'usanetwork_press_hs_taxonomy_widget_links_contacts_validate';
+      }
+
+      $form['field_menu_position'][LANGUAGE_NONE]['#required'] = TRUE;
+      break;
+    case 'press_kit_project_node_form':
+      if (!empty($form_state['node']->nid)) {
+        $form['field_press_preview_link']['#access'] = FALSE;
+        $form['field_press_preview_link'][LANGUAGE_NONE][0]['value']['#attributes'] = array(
+          'readonly' => TRUE,
+          'disabled' => 'disabled',
+        );
+        $node_wrapper = entity_metadata_wrapper('node', $form_state['node']);
+        $key = $node_wrapper->{'field_press_preview_link'}->value();
+        $url = url('usanetwork/preview/' . $key, array('absolute' => TRUE));
+
+        $form['preview_link'] = array(
+          '#type' => 'item',
+          '#title' => t('Preview URL'),
+          '#description' => 'Copy this link, if you want another user to preview this project before publishing',
+          '#markup' => $url,
+          '#weight' => 50,
+        );
+      }
+      else {
+        $form['field_press_preview_link']['#access'] = FALSE;
+        $form['field_press_preview_link'][LANGUAGE_NONE][0]['value']['#default_value'] = drupal_random_key();
+      }
+
+      break;
+    case 'file_entity_edit':
+    case 'file_entity_add':
+    case 'file_entity_add_upload':
+      $form['#after_build'][] = 'usanetwork_press_file_entity_form_after_build';
+
+      break;
+    case 'taxonomy_form_term':
+      if (empty($form_state['term']->tid) && !empty($_GET['project']) && ctype_digit($_GET['project']) && $form_state['term']->vocabulary_machine_name == 'press_kit_items') {
+        $form['relations']['parent']['#default_value'] = $_GET['project'];
+      }
+      break;
+  }
+
+  if (!empty($form['actions']['cancel'])) {
+    $form['actions']['cancel']['#access'] = FALSE;
+  }
+
+  if (strpos($form_id, 'media_edit_') === 0) {
+    $form['#after_build'][] = 'usanetwork_press_file_entity_form_after_build';
+  }
+
+  if ($form_id == 'press_kit_project_node_form') {
+    $form['field_press_kit'][LANGUAGE_NONE]['#after_build'][] = 'usanetwork_press_field_press_kit_after_build';
+    if (!empty($form['field_press_kit'][LANGUAGE_NONE]['entities'][0]['form'])) {
+      $form['field_press_kit'][LANGUAGE_NONE]['entities'][0]['form']['#after_build'][] = 'usanetwork_press_kit_form_after_build';
+    }
+  }
+  if ($form_id == 'press_kit_project_node_form' && !empty($_GET['type']) && in_array($_GET['type'], array(
+      'single',
+      'multiple'
+    ))
+  ) {
+    $form['#after_build'][] = 'usanetwork_press_project_form_after_build';
+    $form_state['storage']['kit_type'] = $_GET['type'];
+  }
+  elseif ($form_id == 'press_kit_project_node_form') {
+    if (!empty($form_state['node']->nid)) {
+      $form['#after_build'][] = 'usanetwork_press_project_form_after_build';
+      $form_state['storage']['kit_type'] = count($form_state['node']->field_press_kit[LANGUAGE_NONE]) == 1 ? 'single' : 'multiple';
+    }
+  }
+
+  if ($form_id == 'press_kit_project_node_form' && !empty($form['field_press_kit'][LANGUAGE_NONE]['form'])) {
+    $form['field_press_kit'][LANGUAGE_NONE]['form']['#after_build'][] = 'usanetwork_press_kit_form_after_build';
+  }
+}
+
+/**
+ * After build for file_entity.
+ */
+function usanetwork_press_file_entity_form_after_build(&$form, &$form_state) {
+  if (!empty($form['replace_upload'])) {
+    $form['replace_upload']['#access'] = FALSE;
+  }
+
+  if (!empty($form['manualcrop'])) {
+    $form['manualcrop']['#access'] = FALSE;
+  }
+
+  if (!empty($form_state['file'])) {
+    if (!empty($form['manualcrop']['file_' . $form_state['file']->fid]['manualcrop_style'])) {
+      $form['manualcrop']['file_' . $form_state['file']->fid]['manualcrop_style']['#access'] = FALSE;
+    }
+  }
+  return $form;
+}
+
+function usanetwork_press_links_contacts_hs_process($element, &$form_state, $complete_form) {
+  $selects = array();
+  foreach($element['hierarchical_select']['selects'] as $key => $select) {
+    if (is_numeric($key)) {
+      $selects[] = $key;
+    }
+  }
+
+  if (count($selects) > 2) {
+    if (!empty($element['hierarchical_select']['selects'][2])) {
+      $element['hierarchical_select']['selects'][2]['#access'] = FALSE;
+    }
+  }
+  return $element;
+}
+
+
+/**
+ * After build function to change some labels.
+ */
+function usanetwork_press_field_press_kit_after_build(&$form, &$form_state) {
+  $form['#title'] = 'E-Kits';
+  if (element_children($form['entities']) && $form_state['storage']['kit_type'] == 'single' && empty($form_state['node']->nid)) {
+    $form['actions']['ief_add']['#access'] = FALSE;
+  }
+  return $form;
+}
+
+/**
+ * After build function to change some labels.
+ */
+function usanetwork_press_project_form_after_build(&$form, &$form_state) {
+  switch ($form_state['storage']['kit_type']) {
+    case "single":
+      $form['field_press_kit_intro_text']['#access'] = FALSE;
+      if (!empty($form_state['node']->nid)) {
+        drupal_set_title('Edit Single Show E-kit');
+      } else {
+        drupal_set_title('Create Single Show E-kit');
+      }
+
+
+      break;
+    case "multiple":
+      if (!empty($form_state['node']->nid)) {
+        drupal_set_title('Edit Multiple Show E-kit');
+      } else {
+        drupal_set_title('Create Multiple Show E-kit');
+      }
+
+      break;
+  }
+
+  if (!empty($form['field_press_kit'][LANGUAGE_NONE]['actions']['ief_add']['#value'])) {
+    $form['field_press_kit'][LANGUAGE_NONE]['actions']['ief_add']['#value'] = element_children($form['field_press_kit'][LANGUAGE_NONE]['entities']) ? 'Create another E-Kit' : 'Create E-Kit';
+  }
+
+  return $form;
+}
+
+/**
+ * After build for e-kit.
+ */
+function usanetwork_press_kit_form_after_build(&$form, &$form_state) {
+  $form['#title'] = 'Create E-Kit';
+  $form['title']['#title'] = 'E-Kit Title';
+
+  if (!empty($form['field_press_kit_background'][LANGUAGE_NONE][0]['#title'])) {
+    $form['field_press_kit_background'][LANGUAGE_NONE][0]['#title'] = 'Homepage image';
+  }
+
+  if (!empty($form['field_press_kit_logo'][LANGUAGE_NONE][0]['#title'])) {
+    $form['field_press_kit_logo'][LANGUAGE_NONE][0]['#title'] = 'E-Kit logo';
+  }
+
+  if (!empty($form['field_press_kit_header_bg'][LANGUAGE_NONE][0]['#title'])) {
+    $form['field_press_kit_header_bg'][LANGUAGE_NONE][0]['#title'] = 'Header image';
+  }
+
+  if ($form_state['storage']['kit_type'] == 'multiple') {
+    $form['field_press_kit_background']['#access'] = FALSE;
+    if (!empty($form['field_press_kit_header_bg'][LANGUAGE_NONE][0]['#title'])) {
+      $form['field_press_kit_header_bg'][LANGUAGE_NONE][0]['#title'] = 'Header and Homepage image';
+    }
+  }
+
+  if (!empty($form['actions']['ief_add_save'])) {
+    $form['actions']['ief_add_save']['#value'] = 'Submit E-Kit';
+  }
+  if (!empty($form['actions']['ief_edit_save'])) {
+    $form['actions']['ief_edit_save']['#value'] = 'Update E-Kit';
+  }
+
+  return $form;
+}
+
+/**
+ * Hide fields with values.
+ */
+function usanetwork_press_hs_taxonomy_widget_process($element, &$form_state, $complete_form) {
+  if (count($element['hierarchical_select']['selects']) > 2) {
+    if (!empty($element['hierarchical_select']['selects'][0])) {
+      $element['hierarchical_select']['selects'][0]['#attributes'] = array('readonly' => 'readonly');
+    }
+    if (!empty($element['hierarchical_select']['selects'][1])) {
+      $element['hierarchical_select']['selects'][1]['#attributes'] = array('readonly' => 'readonly');
+    }
+  }
+  return $element;
+}
+
+/**
+ * Validate menu for links and contacts.
+ */
+function usanetwork_press_hs_taxonomy_widget_links_contacts_validate($element, $form_state, $complete_form) {
+  $parents = array();
+  if(isset($form_state['values']['field_menu_position']['und']['0']['tid'])) {
+    $term_id = $form_state['values']['field_menu_position']['und']['0']['tid'];
+    $parents = taxonomy_get_parents_all($term_id);
+  }
+  if (count($parents) < 2) {
+    form_set_error('field_menu_position','You must select at least 2nd level of menu');
+  }
+}
+
+/**
+ * Validate menu selection.
+ */
+function usanetwork_press_hs_taxonomy_widget_validate($element, $form_state, $complete_form) {
+  $parents = array();
+  if(isset($form_state['values']['field_menu_position'][LANGUAGE_NONE]['0']['tid'])) {
+    $term_id = $form_state['values']['field_menu_position'][LANGUAGE_NONE]['0']['tid'];
+    $parents = taxonomy_get_parents_all($term_id);
+  }
+  if (count($parents) < 3) {
+    form_set_error('field_menu_position','You must select at least 3rd level of menu');
+  }
+}
+
+/**
+ * Implements hook_preprocess_page().
+ */
+function usanetwork_press_preprocess_page(&$variables) {
+  drupal_add_css(drupal_get_path('module','usanetwork_press') . '/css/admin.css');
+}
+
+/**
+ * Implements hook_form_FORM_ID_alter().
+ *
+ * Provides integration with the File Entity (and Media) module by adding the
+ * crop functionality to the file upload form.
+ */
+function usanetwork_press_form_file_entity_add_upload_alter(&$form, &$form_state) {
+  if ($form['#step'] == 4 && empty($form['#entity'])) {
+    if (!empty($form_state['values']['upload'])) {
+      $file = file_load($form_state['values']['upload']);
+      $form['#entity'] = $file;
+    }
+  }
+}
+
+function usanetwork_press_form_media_wysiwyg_format_form_alter(&$form, &$form_state) {
+  drupal_add_css(drupal_get_path('module','usanetwork_press') .'/css/admin.css');
+  if (!empty($form_state['file'])) {
+    $form['#entity'] = $form_state['file'];
+    _manualcrop_process_file_entity_form($form, $form_state, array());
+    $form['actions']['submit_crop'] = array(
+      '#type' => 'submit',
+      '#value' => t('Create cropped image'),
+      '#submit' => array('usanetwork_press_create_cropped_image'),
+      // See the examples in ajax_example.module for more details on the
+      // properties of #ajax.
+      '#ajax' => array(
+        'callback' => 'usanetwork_press_create_cropped_image',
+        'wrapper' => 'media-wysiwyg-format-form-wrapper',
+      ),
+      '#weight' => 100,
+    );
+
+    $form['manualcrop']['#weight'] = 99;
+
+    foreach($form['manualcrop'] as &$crop) {
+      if (is_array($crop) && isset($crop['manualcrop_style'])) {
+        $crop['manualcrop_style']['#weight'] = 99;
+      }
+    }
+
+    $form['title']['#access'] = FALSE;
+    $form['options']['#access'] = FALSE;
+
+
+    $form['#prefix'] = '<div id="media-wysiwyg-format-form-wrapper">';
+    $form['#suffix'] = '</div>';
+    drupal_add_js(drupal_get_path('module','usanetwork_press') .'/usanetwork_press.js');
+  }
+
+  if (!empty($form_state['storage']['changed_file'] )) {
+    $element = media_wysiwyg_get_file_without_label($form_state['storage']['changed_file'], 'default', array('wysiwyg' => TRUE));
+    // Make a pretty name out of this.
+    $rendered_image = drupal_render($element);
+    $form['#attached']['js'][0]['data']['media']['formatFormFormats']['default'] = $rendered_image;
+    $form['#formats']['default'] = $rendered_image;
+
+    unset($form['actions']['submit_crop']);
+
+    $form['Insert'] = array(
+      '#markup' => '<button type="submit" onclick="Drupal.media.formatForm.submit(' . $form_state['storage']['changed_file']->fid . ');return false;">Insert</button>',
+      '#attributes' => array('onclick' => "Drupal.media.formatForm.submit(" . $form_state['storage']['changed_file']->fid . ");return false;"),
+      '#description' => t('Submit button.'),
+    );
+    drupal_add_js(array('usanetwork_press' => array($form_state['storage']['changed_file']->fid => $rendered_image)), 'setting');
+  } else {
+    $element = media_wysiwyg_get_file_without_label($form_state['file'], 'default', array('wysiwyg' => TRUE));
+    // Make a pretty name out of this.
+    $rendered_image = drupal_render($element);
+    //Allow paste image without crop.
+    $form['submit'] = array(
+      '#markup' => '<button type="submit" onclick="Drupal.media.formatForm.submit(' . $form_state['file']->fid . ');return false;">Submit</button>',
+      '#attributes' => array('onclick' => "Drupal.media.formatForm.submit(" .  $form_state['file']->fid . ");return false;"),
+      '#description' => t('Submit button.'),
+    );
+    drupal_add_js(array('usanetwork_press' => array($form_state['file']->fid => $rendered_image)), 'setting');
+  }
+}
+
+function usanetwork_press_create_cropped_image($form, &$form_state) {
+  if (!empty($form_state['file']) && !empty($form_state['values']['manualcrop']) && empty($form_state['storage']['changed_file'])) {
+    $old_file = $form_state['file'];
+    $cropped_file = file_copy($form_state['file'], $form_state['file']->uri);
+    $cropped_file->filename = 'Crop for ' . $cropped_file->filename;
+    file_save($cropped_file);
+    $form_state['file'] = $cropped_file;
+    $form_state['rebuild'] = TRUE;
+    $crop_settings = array_shift($form_state['values']['manualcrop']);
+    $form_state['values']['manualcrop']['file' . $cropped_file->fid] = $crop_settings;
+    $form_state['storage']['changed_file'] = $cropped_file;
+
+    $manualcrop_data = array_shift($form_state['manualcrop_data']['images']);
+    $form_state['manualcrop_data']['images'][$cropped_file->fid] = $manualcrop_data;
+
+    $manualcrop_data = array_shift($form_state['manualcrop_data']['selections']);
+    $manualcrop_data['path'] = $cropped_file->uri;
+    $form_state['manualcrop_data']['selections'][$cropped_file->fid] = $manualcrop_data;
+
+    // Make a copy of revisioned data when the new revision is created so that it
+    // can be cropped without harming the prior revision.
+    manualcrop_save_crop_data($cropped_file, $manualcrop_data['styles']);
+  }
+  return $form;
+}
+
+function usanetwork_press_field_widget_form_alter(&$element, &$form_state, $context) {
+  if ($context['field']['type'] == 'image' && $context['instance']['widget']['type'] == 'media_generic') {
+    // Be sure not to overwrite existing attributes.
+   if (is_array($element)) {
+     $element[0]['#process'][] = 'usanetwork_press_media_process';
+     $element[0]['#element_validate'][] = 'usanetwork_press_media_element_validate';
+   }
+  }
+
+  if ($context['field']['type'] == 'link_field' && $context['instance']['widget']['type'] == 'link_field') {
+    // Be sure not to overwrite existing attributes.
+    $element['#after_build'][] = 'usanetwork_press_link_after_build';
+    if (!isset($element['#pre_render'])) {
+      $element['#pre_render'] = array();
+    }
+    $element['#pre_render'][] = 'usanetwork_press_link_pre_render';
+  }
+  return $element;
+}
+
+/**
+ * Add custom theme function to change order of fields.
+ */
+function usanetwork_press_link_pre_render($element) {
+  $element['#theme'] = 'usanetwork_press_link_field';
+  return $element;
+}
+
+/**
+ * Validate images for min size.
+ */
+function usanetwork_press_media_element_validate(&$element, &$form_state, $complete_form) {
+  if (!empty($element['#file']) && $form_state['triggering_element']['#value'] != 'Remove') {
+    $errors = array();
+    if (!empty($element['#media_options']['global']['min_resolution'])) {
+      $errors = file_validate_image_resolution($element['#file'], 0, $element['#media_options']['global']['min_resolution']);
+    }
+    if (!empty($errors)) {
+      $error = implode(',', $errors);
+      form_error($element, $error);
+      $element['#file'] = NULL;
+      $element['#value'] = NULL;
+      $element['preview'] = NULL;
+      $element['fid'] = NULL;
+      $element['edit'] = NULL;
+      $element['manualcrop_style'] = NULL;
+    }
+    else {
+      $file = $element['#file'];
+      $file_usage = file_usage_list($file);
+      if (!empty($file_usage['file']['node'])) {
+        $nodes = array_keys($file_usage['file']['node']);
+        // File alredy in use.
+        if (!in_array($element['#entity']->nid, $nodes) || (!empty($nodes) && !empty($element['#entity']->is_new))) {
+          $cropped_file = file_copy($file, $file->uri);
+          $cropped_file->filename = 'Crop for ' . $cropped_file->filename;
+          file_save($cropped_file);
+          $crop_settings = $form_state['manualcrop_data']['selections'][$file->fid];
+          unset($form_state['manualcrop_data']['selections'][$file->fid]);
+          $form_state['manualcrop_data']['selections'][$cropped_file->fid] = $crop_settings;
+          $element['#value']['fid'] = $cropped_file->fid;
+          form_set_value($element, (array) $cropped_file, $form_state);
+          // Make a copy of revisioned data when the new revision is created so that it
+          // can be cropped without harming the prior revision.
+          manualcrop_save_crop_data($cropped_file, $crop_settings['styles']);
+        }
+      }
+      else {
+        if (!empty($form_state['manualcrop_data']['selections'][$file->fid])) {
+          $crop_settings = $form_state['manualcrop_data']['selections'][$file->fid];
+          $crop_not_empty = TRUE;
+          foreach ($crop_settings['styles'] as $key => $crop_style) {
+            if (!empty($crop_style)) {
+              $crop_not_empty = FALSE;
+            }
+          }
+
+          if (!$crop_not_empty) {
+            // If 1 image user in content creation form twice.
+            $cropped_file = file_copy($file, $file->uri);
+            $cropped_file->filename = 'Crop for ' . $cropped_file->filename;
+            file_save($cropped_file);
+            $crop_settings = $form_state['manualcrop_data']['selections'][$file->fid];
+            $element['#value']['fid'] = $cropped_file->fid;
+            form_set_value($element, (array) $cropped_file, $form_state);
+            $form_state['manualcrop_data']['selections'][$cropped_file->fid] = $crop_settings;
+            // Make a copy of revisioned data when the new revision is created so that it
+            // can be cropped without harming the prior revision.
+            manualcrop_save_crop_data($cropped_file, $crop_settings['styles']);
+
+          }
+        }
+      }
+    }
+  }
+}
+
+/**
+ * Change link field labels.
+ */
+function usanetwork_press_link_after_build(&$element, &$form_state) {
+  if (!empty($element['attributes']['title'])) {
+    $element['attributes']['title']['#title'] = 'Social Media Service';
+    $element['attributes']['title']['#required'] = TRUE;
+    $element['attributes']['title']['#field_prefix']  = NULL;
+    $element['attributes']['title']['#field_suffix']  = NULL;
+    $element['url']['#required'] = FALSE;
+  }
+  return $element;
+}
+
+/**
+ * Custom output of links field.
+ */
+function usanetwork_press_preprocess_field(&$variables) {
+  $element = $variables['element'];
+  if ($element['#field_name'] == 'field_link' && $element['#bundle'] =='field_social_media_links') {
+    $rows = array();
+    foreach($variables['items'] as $item) {
+      $row_item = array(
+        'label' => !empty($item['#element']['attributes']['title']) ? $item['#element']['attributes']['title'] : $item['#element']['title'],
+        'text' => render($item),
+      );
+      $row_item['label'] .= ':';
+      $rows[] = $row_item;
+
+    }
+
+    $variables['items'] = array(
+      '#markup' => theme('table', array('header' => NULL, 'rows' => $rows)),
+    );
+  }
+}
+
+/**
+ * Change preview style.
+ */
+function usanetwork_press_media_process($element, &$form_state, $form) {
+  $element['preview']['content']['#image_style'] = 'thumbnail';
+  return $element;
+}
+
+/**
+ * Add admin css styles.
+ */
+function usanetwork_press_preprocess_views_view(&$vars) {
+  $view = $vars['view'];
+  // Make sure it's the correct view
+  if($view->name == 'media_default') {
+  // add needed stylesheet
+    drupal_add_css(drupal_get_path('module','usanetwork_press') .'/css/admin.css');
+  }
+}
+
+function usanetwork_press_form_taxonomy_overview_terms_alter(&$form, &$form_state, $form_id) {
+  $form['#submit'][] = 'usanetwork_press_form_taxonomy_overview_terms_submit';
+}
+
+function usanetwork_press_form_taxonomy_overview_terms_submit($form, &$form_state) {
+  // Sort term order based on weight.
+  uasort($form_state['values'], 'drupal_sort_weight');
+
+  $vocabulary = $form['#vocabulary'];
+  $hierarchy = 0; // Update the current hierarchy type as we go.
+
+  $changed_terms = array();
+  $tree = taxonomy_get_tree($vocabulary->vid);
+
+  if (empty($tree)) {
+    return;
+  }
+
+  // Build a list of all terms that need to be updated on previous pages.
+  $weight = 0;
+  $term = (array) $tree[0];
+  while ($term['tid'] != $form['#first_tid']) {
+    if ($term['parents'][0] == 0 && $term['weight'] != $weight) {
+      $term['parent'] = $term['parents'][0];
+      $term['weight'] = $weight;
+      $changed_terms[$term['tid']] = $term;
+    }
+    $weight++;
+    $hierarchy = $term['parents'][0] != 0 ? 1 : $hierarchy;
+    $term = (array) $tree[$weight];
+  }
+
+  // Renumber the current page weights and assign any new parents.
+  $level_weights = array();
+  foreach ($form_state['values'] as $tid => $values) {
+    if (isset($form[$tid]['#term'])) {
+      $term = $form[$tid]['#term'];
+      // Give terms at the root level a weight in sequence with terms on previous pages.
+      if ($values['parent'] == 0 && $term['weight'] != $weight) {
+        $term['weight'] = $weight;
+        $changed_terms[$term['tid']] = $term;
+      }
+      // Terms not at the root level can safely start from 0 because they're all on this page.
+      elseif ($values['parent'] > 0) {
+        $level_weights[$values['parent']] = isset($level_weights[$values['parent']]) ? $level_weights[$values['parent']] + 1 : 0;
+        if ($level_weights[$values['parent']] != $term['weight']) {
+          $term['weight'] = $level_weights[$values['parent']];
+          $changed_terms[$term['tid']] = $term;
+        }
+      }
+      // Update any changed parents.
+      if ($values['parent'] != $term['parent']) {
+        $term['parent'] = $values['parent'];
+        $changed_terms[$term['tid']] = $term;
+      }
+      $hierarchy = $term['parent'] != 0 ? 1 : $hierarchy;
+      $weight++;
+    }
+  }
+
+  // Build a list of all terms that need to be updated on following pages.
+  for ($weight; $weight < count($tree); $weight++) {
+    $term = (array) $tree[$weight];
+    if ($term['parents'][0] == 0 && $term['weight'] != $weight) {
+      $term['parent'] = $term['parents'][0];
+      $term['weight'] = $weight;
+      $changed_terms[$term['tid']] = $term;
+    }
+    $hierarchy = $term['parents'][0] != 0 ? 1 : $hierarchy;
+  }
+
+  foreach ($changed_terms as $changed_term) {
+    taxonomy_term_save((object) $changed_term);
+  }
+}
+
+/**
+ * Implements hook_permission().
+ */
+function usanetwork_press_permission() {
+  return array(
+    'administer error pages' =>  array(
+      'title' => t('Administer 404 and 403 error pages'),
+      'description' => t('Perform administration for 404 and 403 error pages.'),
+    ),
+  );
+}
+
+/**
+ * Callback for settings form for errors.
+ */
+function usanetwork_press_error_pages_callback() {
+  $form = array();
+
+  $defaults = array(
+    'value' => '',
+    'format' => filter_default_format(),
+  );
+  $page_not_found = variable_get('404_error_message', $defaults);
+  $access_denied = variable_get('403_error_message', $defaults);
+  $page_unavailable = variable_get('page_unavailable_error_message', $defaults);
+
+  $form['404_error_message'] = array(
+    '#type' => 'text_format',
+    '#title' => t('Page not found message'),
+    '#default_value' => $page_not_found['value'],
+    '#format' => $page_not_found['format'],
+  );
+
+  $form['403_error_message'] = array(
+    '#type' => 'text_format',
+    '#title' => t('Access denied page message'),
+    '#default_value' => $access_denied['value'],
+    '#format' => $access_denied['format'],
+  );
+
+  $form['page_unavailable_error_message'] = array(
+    '#type' => 'text_format',
+    '#title' => t('Page unavailable message'),
+    '#default_value' => $page_unavailable['value'],
+    '#format' => $page_unavailable['format'],
+  );
+
+  return system_settings_form($form);
+}
+
+/**
+ * Implements hook_theme().
+ */
+function usanetwork_press_theme() {
+  return array(
+    'usanetwork_press_node_add_list' => array(
+      'variables' => array('content' => NULL),
+    ),
+    'usanetwork_press_link_field' => array(
+      'render element' => 'element',
+    ),
+    'usanetwork_press_taxonomy_list' => array(
+      'render element' => 'form',
+    ),
+    'usanetwork_press_dynamic_header' => array(
+      'render element' => 'data',
+      'template' => 'plugins/templates/usanetwork-press-dynamic-header-object'
+    ),
+  );
+}
+
+function theme_usanetwork_press_link_field($vars) {
+  drupal_add_css(drupal_get_path('module', 'link') . '/link.css');
+  $element = $vars['element'];
+  // Prefix single value link fields with the name of the field.
+  if (empty($element['#field']['multiple'])) {
+    if (isset($element['url']) && !isset($element['title'])) {
+      $element['url']['#title_display'] = 'invisible';
+    }
+  }
+
+  if (!empty($element['url'])) {
+    $element['url']['#type'] = 'textfield';
+  }
+
+  $output = '';
+  $output .= '<div class="link-field-subrow clearfix">';
+  if (!empty($element['attributes']['title'])) {
+    $output .= '<div class="link-attributes">' . drupal_render($element['attributes']['title']) . '</div>';
+  }
+  if (isset($element['title'])) {
+    $output .= '<div class="link-field-title link-field-column">' . drupal_render($element['title']) . '</div>';
+  }
+  $output .= '<div class="link-field-url' . (isset($element['title']) ? ' link-field-column' : '') . '">' . drupal_render($element['url']) . '</div>';
+  $output .= '</div>';
+  if (!empty($element['attributes']['target'])) {
+    $output .= '<div class="link-attributes">' . drupal_render($element['attributes']['target']) . '</div>';
+  }
+
+  if (!empty($element['attributes']['class'])) {
+    $output .= '<div class="link-attributes">' . drupal_render($element['attributes']['class']) . '</div>';
+  }
+  $output .= drupal_render_children($element);
+  return $output;
+}
+
+/**
+ * Alter "node/add" page.
+ */
+function usanetwork_press_menu_alter(&$items) {
+  // Example - disable the page at node/add
+  $items['node/add']['page callback'] = 'usanetwork_press_node_add_page';
+}
+
+/**
+ * Page callback for "node/add".
+ */
+function usanetwork_press_node_add_page() {
+  $item = menu_get_item();
+  $content = system_admin_menu_block($item);
+  // Bypass the node/add listing if only one content type is available.
+  if (count($content) == 1) {
+    $item = array_shift($content);
+    drupal_goto($item ['href']);
+  }
+  $new_order = array(
+    'node/add/press-kit-project' => 1,
+    'node/add/press-materials-page' => 2,
+    'node/add/usanetwork-photos' => 3,
+    'node/add/videos-page' => 4,
+    'node/add/links-page'=> 5,
+    'node/add/contacts-page'=> 6,
+  );
+
+  $new_content = array();
+  $i = 7;
+  foreach ($content as $key => $add_node_item) {
+    if (!empty($new_order[$add_node_item['path']])) {
+      $new_content[$new_order[$add_node_item['path']]] = $add_node_item;
+    } else {
+      $new_content[$i] = $add_node_item;
+      $i++;
+    }
+  }
+  ksort($new_content);
+
+  return theme('usanetwork_press_node_add_list', array('content' => $new_content));
+}
+
+/**
+ * Display the list of available node types for node creation.
+ */
+function theme_usanetwork_press_node_add_list($variables) {
+  $content = $variables['content'];
+  $output = '';
+  if ($content) {
+    $output = '<ul class="admin-list">';
+    foreach ($content as $item) {
+      $output .= '<li class="clearfix">';
+      if ($item['path'] == 'node/add/press-kit-project') {
+        $output .= '<span class="label">' . $item['title'] . ':</span> ';
+        $item['localized_options']['query'] = array('type' => 'single');
+        $output .= '<span class="options label">' . l('Create a new single show e-kit', $item['href'], $item['localized_options']) . ' or </span>';
+        $item['localized_options']['query'] = array('type' => 'multiple');
+        $output .= '<span class="options label">' . l('Create a new multiple show e-kit', $item['href'], $item['localized_options']) . '</span>';
+        $output .= '<div class="description">' . filter_xss_admin($item['description']) . '</div>';
+      } else {
+        $output .= '<span class="label">' . l($item['title'], $item['href'], $item['localized_options']) . '</span>';
+        $output .= '<div class="description">' . filter_xss_admin($item['description']) . '</div>';
+      }
+      $output .= '</li>';
+
+    }
+    $output .= '</ul>';
+  }
+  else {
+    $output = '<p>' . t('You have not created any content types yet. Go to the <a href="@create-content">content type creation page</a> to add a new content type.', array('@create-content' => url('admin/structure/types/add'))) . '</p>';
+  }
+  return $output;
+}
+
+/**
+ * Implements multiple_field_remove_button_field_widgets_alter.
+ */
+function usanetwork_press_multiple_field_remove_button_field_widgets_alter(&$fieldwidgets) {
+  $fieldwidgets[] = 'urlwidget';
+}
+
+/**
+ * Validates links field.
+ */
+function usanetwork_press_links_form_validate($form, &$form_state){
+  if(!form_get_errors()) {
+    $lang = $form['language']['#value'];
+    if (!empty($form_state['values']['field_social_media_links'][$lang])) {
+      foreach ($form_state['values']['field_social_media_links'][$lang] as $key => $field_collection) {
+        if (is_array($field_collection)) {
+          foreach ($field_collection['field_subtitle'][$lang] as $field_subtitle) {
+            if ($field_subtitle['value'] == '') {
+              $field_name = $form['field_social_media_links'][$lang][$key]['field_subtitle'][$lang]['#title'];
+              form_set_error("field_social_media_links][$lang][$key][field_subtitle", t('!field_name field is required', array('!field_name' => $field_name)));
+            }
+          }
+          foreach ($field_collection['field_link'][$lang] as $key_link => $field_link) {
+            if (is_array($field_link)) {
+              if ($field_link['title'] == '' && $field_link['url'] == '') {
+                $field_link_name = $form['field_social_media_links'][$lang][$key]['field_link'][$lang]['#title'];
+                form_set_error("field_social_media_links][$lang][$key][field_link][$lang][$key_link", t('Please fill in title or url for !field_link_name field.', array('!field_link_name' => $field_link_name)));
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}
+
+/**
+ * Implements hook_field_attach_submit().
+ */
+function usanetwork_press_field_attach_submit($entity_type, $entity, $form, &$form_state) {
+  $values = drupal_array_get_nested_value($form_state['values'], $form['#parents']);
+
+  if (!empty($entity->type) && $entity->type == 'press_kit') {
+    if (!empty($values['field_press_kit_header_bg']['und'][0])) {
+      $fid = $values['field_press_kit_header_bg']['und'][0]['fid'];
+      if (!empty($form_state['manualcrop_data']['selections'][$fid]['styles']['usanetwork_press_header_background'])) {
+        $new_crop = $form_state['manualcrop_data']['selections'][$fid]['styles']['usanetwork_press_header_background'];
+        $form_state['manualcrop_data']['selections'][$fid]['styles']['usanetwork_press_multiply_home_page_background']= $new_crop;
+      }
+      else if(!empty($form['field_press_kit_header_bg']['und'][0]['manualcrop_selections']['usanetwork_press_header_background']['#default_value'])) {
+        $crop = $form['field_press_kit_header_bg']['und'][0]['manualcrop_selections']['usanetwork_press_header_background']['#default_value'];
+        $map_crop = array_map('intval', explode('|', $crop));
+        $new_crop = array('x' => $map_crop[0],
+                    'y' => $map_crop[1],
+                    'width' => $map_crop[2],
+                    'height' => $map_crop[3],
+        );
+        $form_state['manualcrop_data']['selections'][$fid]['styles']['usanetwork_press_multiply_home_page_background'] = $new_crop;
+      }
+    }
+  }
+}

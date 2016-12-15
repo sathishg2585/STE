@@ -1,0 +1,107 @@
+<?php
+/**
+ * @file
+ * Code for the FYC SYFY
+ */
+
+define('SITE_PARENT', 'SYFY');
+define('SITE_PARENT_LINK', 'http://www.syfy.com');
+
+/**
+ * Implements hook_ctools_plugin_directory().
+ */
+function fycsyfy_core_ctools_plugin_directory($owner, $plugin_type) {
+
+  if ($owner == 'ctools' && ($plugin_type == 'content_types' || $plugin_type == 'access')) {
+    return 'plugins/' . $plugin_type;
+  }
+}
+
+
+/**
+ * Implements hook_theme().
+ */
+function fycsyfy_core_theme() {
+  return array(
+    'fycsyfy_core_vimeo_video_page' => array(
+      'render element' => 'data',
+      'template' => 'plugins/templates/fycsyfy-core-vimeo-video-page-template'  
+    ),
+    'fycsyfy_core_node_add_list' => array(
+      'variables' => array('content' => NULL),
+    ),    
+  );
+}
+
+/**
+ * Alter "node/add" page.
+ */
+function fycsyfy_core_menu_alter(&$items) {
+  // Example - disable the page at node/add
+  $items['node/add']['page callback'] = 'fycsyfy_core_node_add_page';
+}
+
+/**
+ * Page callback for "node/add".
+ */
+function fycsyfy_core_node_add_page() {
+  module_load_include('module', 'fyc');
+  $item = menu_get_item();
+  $content = system_admin_menu_block($item);
+  // Bypass the node/add listing if only one content type is available.
+  if (count($content) == 1) {
+    $item = array_shift($content);
+    drupal_goto($item ['href']);
+  }
+  $new_order = array(
+    'node/add/fyc-project' => 1,
+    'node/add/fyc-series-overview' => 2,
+    'node/add/fycsyfy-vimeo-video' => 3,
+  );
+
+  $new_content = array();
+  $i = 7;
+  foreach ($content as $key => $add_node_item) {
+    if (!empty($new_order[$add_node_item['path']])) {
+      $new_content[$new_order[$add_node_item['path']]] = $add_node_item;
+    } else {
+      $new_content[$i] = $add_node_item;
+      $i++;
+    }
+  }
+  ksort($new_content);
+
+  return theme('fycsyfy_core_node_add_list', array('content' => $new_content));
+}
+
+/**
+ * Display the list of available node types for node creation.
+ */
+function theme_fycsyfy_core_node_add_list($variables) {
+  $content = $variables['content'];
+  $output = '';
+  if ($content) {
+    $output = '<ul class="admin-list">';
+    foreach ($content as $item) {
+      $output .= '<li class="clearfix">';
+      if ($item['path'] == 'node/add/fyc-project') {
+        $output .= '<span class="label">' . $item['title'] . ':</span> ';
+        $item['localized_options']['query'] = array('type' => 'single');
+        $output .= '<span class="options label">' . l('Create a new single fyc show', $item['href'], $item['localized_options']) . ' or </span>';
+        $item['localized_options']['query'] = array('type' => 'multiple');
+        $output .= '<span class="options label">' . l('Create a new multiple fyc show', $item['href'], $item['localized_options']) . '</span>';
+        $output .= '<div class="description">' . filter_xss_admin($item['description']) . '</div>';
+      } else {
+        $output .= '<span class="label">' . l($item['title'], $item['href'], $item['localized_options']) . '</span>';
+        $output .= '<div class="description">' . filter_xss_admin($item['description']) . '</div>';
+      }
+      $output .= '</li>';
+
+    }
+    $output .= '</ul>';
+  }
+  else {
+    $output = '<p>' . t('You have not created any content types yet. Go to the <a href="@create-content">content type creation page</a> to add a new content type.', array('@create-content' => url('admin/structure/types/add'))) . '</p>';
+  }
+  return $output;
+}

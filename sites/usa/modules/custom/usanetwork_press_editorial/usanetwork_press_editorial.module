@@ -1,0 +1,40 @@
+<?php
+
+/**
+ * Implements hook_field_widget_info().
+ */
+function usanetwork_press_editorial_field_widget_info() {
+  return array(
+    'colorfield_select' => array(
+      'label' => t('Pre-defined list'),
+      'field types' => array('colorfield'),
+      'behaviors' => array(
+        'multiple values' => FIELD_BEHAVIOR_CUSTOM,
+      ),
+    ),
+  );
+}
+
+/**
+ * Implements hook_field_widget_form().
+ */
+function usanetwork_press_editorial_field_widget_form(&$form, &$form_state, $field, $instance, $langcode, $items, $delta, $element) {
+  $widget = $element;
+
+  $widget['#delta'] = $delta;
+  switch ($instance['widget']['type']) {
+    case 'colorfield_select':
+      $value = isset($items[$delta]['rgb']) ? $items[$delta]['rgb'] : '';
+      $widget += array(
+        '#type' => 'select',
+        '#options' => array(
+          '#FFFFFF' => t('White'),
+          '#222222' => t('Dark Grey'),
+        ),
+        '#default_value' => $value,
+      );
+      $element[$delta]['rgb'] = $widget;
+      break;
+  }
+  return $element;
+}

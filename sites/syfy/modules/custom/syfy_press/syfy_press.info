@@ -1,0 +1,4 @@
+name = Syfy Press
+description = Helper functions to manage SyFy press kit site
+package = SyFy
+core = 7.x

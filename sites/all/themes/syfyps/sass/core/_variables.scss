@@ -1,0 +1,38 @@
+$apple-tablet: 768px;
+$tablet-range: 800px;
+$desktop-range: 1279px;
+$large-range: 1280px;
+$portable-range: 1024px;
+
+$screen: "screen";
+
+$tablet-only:         "#{$screen} and (max-width:#{($tablet-range)})";
+$apple-only:          "#{$screen} and (max-width:#{($apple-tablet)})";
+$apple-landscape:     "#{$screen} and (min-width:#{($apple-tablet)}) and (max-width:#{($portable-range)}) and (orientation : landscape) and (-webkit-min-device-pixel-ratio: 2)";
+$portable-only:       "#{$screen} and (max-width:#{($portable-range)})";
+$sidebar-fix:         "#{$screen} and (max-width:#{($large-range)})";
+$tablet-to-desktop:   "#{$screen} and (min-width:#{($tablet-range+1)}) and (max-width:#{($desktop-range)})";
+$desktop-only:        "#{$screen} and (min-width:#{($desktop-range+1)})";
+$desktop-to-large:    "#{$screen} and (min-width:#{($desktop-range+1)}) and (max-width:#{($large-range)})";
+$large-only:          "#{$screen} and (min-width:#{($large-range+1)})";
+
+
+/*----------- Fonts -------------*/
+$black:         'Syfy-Black';
+$blackitalic:   'Syfy-BlackItalic';
+$bold:          'Syfy-Bold';
+$bolditalic:    'Syfy-BoldItalic';
+$medium:        'Syfy-Medium';
+$mediumitalic:  'Syfy-MediumItalic';
+$regular:       'Syfy-Regular';
+$regularitalic: 'Syfy-RegularItalic';
+
+/*----------- Colors ------------*/
+$white: #fff;
+$black: #000;
+$purple_main:       #512375;
+$purple_main_dark:  #502374;
+$purple_content_button: #7337aa;
+$bg_main_dark:      #272727;
+$gray_font_menu:    #999999;
+$gray_font_content: #444444;

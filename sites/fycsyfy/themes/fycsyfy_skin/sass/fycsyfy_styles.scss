@@ -1,0 +1,114 @@
+.fyc-usa-logo {
+  background: rgba(0, 0, 0, 0) url('../images/logo-header.png') no-repeat scroll right center !important;
+}
+.fyc-footer a {
+  text-decoration: none !important;
+}
+.page-user.not-logged-in {
+  .panel-display.panel-1col {
+    .panel-panel.panel-col {
+      .pane-fyc-login-logo {
+        .fyc-login-logo {
+          background: url("../images/logo.png") no-repeat 0 0 !important;
+        }
+      }
+    }
+  }
+}
+.pane-fyc-access-code-block {
+  width: 96.3% !important;
+  #fyc-access-code-form {
+    width: 96.3%;
+    div:first-child {
+      background: #393939 url("../images/logo.png") no-repeat 0 0 !important;
+    }
+  }
+}
+.pane-page-messages {
+  width: 96.3% !important;
+  .messages--error {
+    width: 91.6% !important;
+  }
+}
+#tinymce p {
+  max-width: 95%;
+}
+em {
+  font-style: italic;
+}
+strong, b {
+  font-weight: bold;
+}
+u {
+  text-decoration: underline;
+}
+.fyc-content-wrapper {
+  .pane-fyc-landing-page-menu, .pane-fyc-inner-page-menu {
+    background: #33123F !important;
+    font-family: "syfy",Helvetica,Arial,sans-serif !important;
+    line-height: 33px !important;
+    .item-list {
+      li {
+        a {
+          color: #a179b1 !important;
+          font-size: 16px !important;
+        }
+      }
+      li.highlight {
+        a {
+          color: #ffffff !important;
+          font-size: 16px !important;
+        }
+      }
+    }
+  }
+  .pane-page-content {
+    .panel-display {
+      .fyc-left-wrapper {
+        width: 44% !important;
+      }
+      .fyc-video-page {
+        .player {
+          .grid{
+            .video-player {
+              .playlist {
+                li {
+                  height: 106px !important;
+                  width: 188px !important;
+                }
+              }
+            }
+            .video-description {
+              margin-left: 2px;
+              h1 {
+                color: #FFFFFF;
+              }
+            }
+            .quotes {
+              margin-left: 7px !important;
+            }
+          }
+        }
+      }
+    }
+  }
+  .pane-fyc-tab {
+    background-position: 10em 0.1em !important;
+  }
+}
+.fyc-homepage-project-wrapper, .fyc-innerpages-wrapper, .page-page-not-found, .page-access-denied {
+  max-width: 96.3% !important;
+  .fyc-header-wrapper {
+    .fyc-usa-wrapper {
+      .fyc-usa-message {
+        width: 83%;
+        .header_link {
+          font-weight: normal !important;
+        }
+      }
+      .fyc-usa-logo {
+        width: 17%;
+      }
+    }
+  }
+}

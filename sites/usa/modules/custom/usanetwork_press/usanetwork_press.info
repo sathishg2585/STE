@@ -1,0 +1,4 @@
+name = USA Network Press
+description = Helper functions to manage USA Network press kit site
+package = USA Network
+core = 7.x

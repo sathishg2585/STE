@@ -1,0 +1,183 @@
+.usanetwork-press-header-kits-menu {
+  ul {
+    background-color: $purple_main_dark;
+    font-family: $avalon-medium;
+    font-size: 14px;
+    line-height: 20px;
+    margin: 0;
+    text-align: center;
+    padding: 5px 0;
+
+
+    li {
+      display: inline-block;
+
+
+      &:not(:last-child){
+        border-right: 1px solid rgba(255, 255, 255, 0.5);
+        margin-right: -3px;
+      }
+
+      &.active a {
+        opacity: 1;
+      }
+
+      a {
+        color: $white;
+        display: block;
+        opacity: 0.5;
+        text-transform: uppercase;
+        text-decoration: none;
+        padding: 5px 15px;
+        letter-spacing: 1.5px;
+
+        &:hover {
+          opacity: 1;
+        }
+      }
+    }
+
+  }
+}
+
+.usanetwork-press-header-wrapper {
+  box-sizing: border-box;
+  height: auto;
+  padding: 0;
+  background-size: cover;
+  position: relative;
+  width: 100%;
+
+  .pane-usanetwork-press-dynamic-header,
+  .usanetwork-press-dynamic_header {
+    height: auto;
+    position: relative;
+    width: 100%;
+  }
+  .usanetwork-press-dynamic_header {
+    video {
+      display: block;
+      object-fit: cover;
+      position: relative;
+    }
+    img {
+      display: block;
+      height: auto;
+      min-height: 270px;
+      max-height: 450px;
+      width: 100%;
+    }
+    .header-blank {
+      background: $bg_main_dark;
+      box-sizing: border-box;
+      min-height: 270px;
+      max-height: 450px;
+      padding: 17.5% 0;
+      width: 100%;
+    }
+  }
+
+  .pane-usanetwork-press-logo {
+    position: absolute;
+    left: 50px;
+    top: 9%;
+
+    .usanetwork-press-logo {
+      margin: 0;
+      background-size: 100%;
+      height: 41px;
+      width: 91px;
+    }
+  }
+
+  .pane-node-field-press-kit-logo {
+    position: absolute;
+    bottom: 0;
+    left: 50%;
+    -webkit-transform: translateX(-50%);
+    transform: translateX(-50%);
+    max-width: 35%;
+
+    img {
+      max-height: 160px;
+      width: auto;
+    }
+  }
+
+  .pane-node-field-press-kit-date-text,
+  .pane-node-field-press-kit-date-date {
+    color: $white;
+    position: absolute;
+    right: 4%;
+  }
+
+  .pane-node-field-press-kit-date-text {
+    font-family: $avalon-medium;
+    font-size: 14px;
+    line-height: 20px;
+    top: 9%;
+    text-transform: uppercase;
+    letter-spacing: 1.4px
+  }
+
+  .pane-node-field-press-kit-date-date {
+    font-family: $avalon-medium;
+    font-size: 28px;
+    line-height: 32px;
+    top: 14%;
+    letter-spacing: -0.6px;
+  }
+}
+
+.usanetwork-press-header-main-menu {
+  background-color: $bg_main_dark;
+
+  .usanetwork-main-menu-list {
+    margin: 0;
+    text-align: center;
+
+    li {
+      display: inline-block;
+      position: relative;
+
+      a {
+        color: $gray_font_menu;
+        display: block;
+        font-family: $avalon-medium;
+        font-size: 14px;
+        line-height: 20px;
+        text-decoration: none;
+        padding: 10px;
+
+        &:hover {
+          color: $white;
+        }
+      }
+
+      &.active:after {
+        content: '';
+        position: absolute;
+        border-style: solid;
+        border-width: 10px 10px 0 10px;
+        border-color: $bg_main_dark transparent transparent transparent;
+        left: 50%;
+        transform: translateX(-50%);
+        bottom: -10px;
+        z-index: 10;
+      }
+    }
+  }
+}
+
+/*----------- Portable Fix For Header -------------*/
+@media #{$portable-only} {
+  .usanetwork-press-header-wrapper {
+    .pane-node-field-press-kit-date-text {
+      font-size: 12px;
+    }
+
+    .pane-node-field-press-kit-date-date {
+      font-size: 24px;
+    }
+  }
+}

@@ -1,0 +1,227 @@
+.page-node-add,
+.page-node-edit {
+  .admin-list {
+    li {
+      max-width: 100%;
+
+      &:first-child span {
+        color: #2fa6e5;
+      }
+    }
+  }
+
+  #press-materials-page-node-form {
+    .field-name-body .form-textarea-wrapper {
+      max-width: 825px;
+    }
+  }
+
+  .group-images {
+    .field-type-image {
+      margin-top: 10px;
+      padding-bottom: 5px;
+      border-bottom: 1px solid #ccc;
+
+      .media-widget {
+        position: relative;
+
+        img.file-icon {
+          display: none;
+        }
+
+        .preview,
+        .manualcrop-preview {
+          clear: right;
+          width: 155px;
+          margin-bottom: 5px;
+          min-height: 75px;
+
+          .manualcrop-preview-cropped {
+            margin: 0 auto;
+          }
+
+          img {
+            margin: 0 auto 10px auto;
+          }
+
+          label {
+            text-align: center;
+          }
+        }
+
+        input.remove,
+        a.browse {
+          clear: left;
+        }
+
+        input.remove,
+        a.browse,
+        .ctools-modal-media-file-edit {
+          display: block;
+          float: left;
+        }
+
+        .manualcrop-style-button-holder {
+          display: inline-block;
+          margin: 0;
+          padding: 0;
+        }
+
+        .focal-point-help {
+          margin-top: 5px;
+        }
+
+        .manualcrop-thumblist {
+          overflow: hidden;
+          position: absolute;
+          left: 175px;
+          top: 0;
+
+          strong.manualcrop-style-thumb-label{
+            min-height: 40px;
+            min-width: 200px;
+          }
+
+          .manualcrop-preview {
+            display: inline-block;
+          }
+        }
+      }
+
+      &:last-child {
+        border-bottom: 0px;
+      }
+    }
+  }
+
+  .field-name-field-press-kit-intro-text input {
+    width: 100%;
+  }
+
+  .field-name-field-press-kit-logo .image-widget img{
+    border: 1px solid #ccc;
+  }
+
+  .field-name-field-photos-download-link,
+  .field-name-field-menu-position,
+  .field-name-field-usanetwork-photos-photo {
+    margin-bottom: 20px;
+  }
+
+  .field-widget-text-textarea-with-summary {
+    margin-top: 20px;
+  }
+
+  .field-add-more-submit {
+    margin: 20px 0;
+  }
+
+  .field-name-field-menu-position .create-new-item {
+    .create-new-item-create {
+      float: left;
+      margin: 0;
+    }
+
+    .create-new-item-cancel {
+      margin: 0;
+    }
+  }
+
+  .field-name-field-usanetwork-photos-photo {
+    .media-widget {
+      a.button.browse {
+        display: inline-block;
+        margin-top: 0;
+      }
+      .manualcrop-style-button-holder {
+        display: inline-block;
+        padding-top: 0;
+      }
+    }
+  }
+
+  .field-name-field-download-pdf .form-type-link-field > label,
+  .field-name-field-photos-download-link .form-type-link-field > label,
+  .field-name-field-menu-position label,
+  .field-widget-text-textarea-with-summary .form-type-textarea > label {
+    margin-bottom: 5px;
+  }
+}
+
+.page-media-format-form {
+  #media-wysiwyg-format-form {
+    > div {
+      position: relative;
+      overflow: hidden;
+    }
+
+    .manualcrop-style-button-holder {
+      padding-bottom: 90px;
+      padding-top: 0;
+    }
+
+    a.button.fake-ok {
+      display:none;
+    }
+
+    #edit-submit-crop {
+      position: absolute;
+      bottom: 45px;
+      left: 0;
+    }
+
+    .manualcrop-style-button-holder {
+      display: block;
+      float: left;
+      clear: left;
+    }
+
+    button[type="submit"] {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+    }
+  }
+}
+
+body.page-media-browser {
+  #media-browser-library-list {
+    width: 100%;
+  }
+
+  #media-browser-tabset {
+    .media-list-thumbnails li {
+      width: 15%;
+      margin-right: 1.6%;
+
+      &:nth-child(6n+7) {
+        clear: left;
+      }
+
+      .media-item {
+        padding: 5% 5% 18px 5%;
+      }
+    }
+  }
+}
+
+.page-node-add-press-kit-project,
+.page-node-edit.node-type-press-kit-project {
+  fieldset.ief-form,
+  .ief-entity-table div.ief-form-row {
+    background-color: #FAFAFA;
+    border: 1px solid #ccc;
+    padding: 25px;
+  }
+
+  .inline-entity-form-node-title {
+    font-weight: 600;
+  }
+}
+
+.page-file-add #file-entity-add-upload-multiple {
+  .sticky-wrapper .my-sticky-element {
+    margin-top: 5px;
+    padding: 0;
+  }
+}

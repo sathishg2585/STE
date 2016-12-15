@@ -1,0 +1,10 @@
+name = FYC SYFY wysiwyg
+core = 7.x
+package = FYC
+dependencies[] = features
+dependencies[] = filter
+dependencies[] = media_wysiwyg
+dependencies[] = wysiwyg
+features[features_api][] = api:2
+features[filter][] = full_html
+features[wysiwyg][] = full_html

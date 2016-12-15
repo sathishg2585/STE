@@ -1,0 +1,29 @@
+.fyc-footer a {
+  text-decoration: none !important;
+}
+.fyc-content-wrapper {
+  .pane-page-content {
+    .panel-display {
+      .fyc-video-page {
+        .player {
+          .grid{
+            .video-description {
+              h1 {
+                color: #FFFFFF;
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}
+em {
+  font-style: italic;
+}
+strong, b {
+  font-weight: bold;
+}
+u {
+  text-decoration: underline;
+}

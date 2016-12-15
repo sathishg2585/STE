@@ -1,0 +1,158 @@
+.syfy-press-header-kits-menu {
+  ul {
+    background-color: $purple_main_dark;
+    font-family: 'Syfy-Medium';
+    font-size: 14px;
+    line-height: 20px;
+    margin: 0;
+    text-align: center;
+    padding: 5px 0;
+
+
+    li {
+      display: inline-block;
+
+
+      &:not(:last-child){
+        border-right: 1px solid rgba(255, 255, 255, 0.5);
+        margin-right: -3px;
+      }
+
+      &.active a {
+        opacity: 1;
+      }
+
+      a {
+        color: $white;
+        display: block;
+        opacity: 0.5;
+        text-transform: uppercase;
+        text-decoration: none;
+        padding: 5px 15px;
+        letter-spacing: 1.5px;
+
+        &:hover {
+          opacity: 1;
+        }
+      }
+    }
+
+  }
+}
+
+.syfy-press-header-wrapper {
+  box-sizing: border-box;
+  padding: 17.5% 50px;
+  background-size: cover;
+  position: relative;
+
+  .pane-syfy-press-logo {
+    position: absolute;
+    top: 7%;
+    left: 2.4%;
+
+    .syfy-press-logo {
+      margin: 0;
+      background-size: 90px 100px;
+      height: 50px;
+      width: 91px;
+    }
+  }
+
+  .pane-node-field-press-kit-logo {
+    position: absolute;
+    bottom: 0;
+    left: 50%;
+    -webkit-transform: translateX(-50%);
+    transform: translateX(-50%);
+    max-width: 35%;
+
+    img {
+      max-height: 130px;
+      width: auto;
+    }
+  }
+
+  .pane-node-field-press-kit-date-text,
+  .pane-node-field-press-kit-date-date {
+    color: $white;
+    position: absolute;
+    right: 2.3%;
+  }
+
+  .pane-node-field-press-kit-date-text {
+    font-family: 'Syfy-Bold';
+    font-size: 12px;
+    line-height: 20px;
+    top: 5.7%;
+    text-transform: uppercase;
+    letter-spacing: 1px
+  }
+
+  .pane-node-field-press-kit-date-date {
+    font-family: 'Syfy-Medium';
+    font-size: 24px;
+    line-height: 32px;
+    top: 10%;
+    letter-spacing: -0.6px;
+  }
+}
+
+.syfy-press-header-main-menu {
+  background-color: $bg_main_dark;
+
+  .syfy-main-menu-list {
+    margin: 0;
+    text-align: center;
+
+    li {
+      display: inline-block;
+      position: relative;
+
+      a {
+        color: $gray_font_menu;
+        display: block;
+        font-family: 'Syfy-Medium';
+        font-size: 14px;
+        line-height: 20px;
+        text-decoration: none;
+        padding: 10px;
+
+        &:hover {
+          color: $white;
+        }
+      }
+
+      &.active:after {
+        content: '';
+        position: absolute;
+        border-style: solid;
+        border-width: 10px 10px 0 10px;
+        border-color: $bg_main_dark transparent transparent transparent;
+        left: 50%;
+        transform: translateX(-50%);
+        bottom: -10px;
+        z-index: 10;
+      }
+    }
+  }
+}
+
+/*----------- Portable Fix For Header -------------*/
+@media #{$portable-only} {
+  .syfy-press-header-wrapper {
+    .syfy-press-logo {
+      background-size: 80px 90px;
+      height: 45px;
+    }
+
+    .pane-node-field-press-kit-date-text {
+      font-size: 10px;
+    }
+
+    .pane-node-field-press-kit-date-date {
+      font-size: 22px;
+      top: 12%;
+    }
+  }
+}

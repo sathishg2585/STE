@@ -1,0 +1,178 @@
+.page-page-not-found,
+.page-access-denied,
+.page-user.not-logged-in,
+.page-user-password {
+  .panel-display {
+    background-color: transparent;
+  }
+
+  .pane-syfy-press-logo {
+    text-align: center;
+
+    .syfy-press-logo {
+      background: url("../images/chiller_error_logo.png") no-repeat;
+      width: 234px;
+      height: 103px;
+      margin-top: 100px;
+      margin-bottom: 60px;
+    }
+  }
+}
+
+.page-page-not-found,
+.page-access-denied {
+  background-color: #222;
+  color: white;
+}
+
+.pane-syfy-press-page-not-found,
+.pane-syfy-press-access-denied,
+.pane-syfy-press-page-unavailable {
+  text-align: center;
+  padding: 35px 0 0 0;
+
+  .syfy-error-title {
+    font-family: $book;
+    font-weight: normal;
+    font-size: 48px;
+    color: #999999;
+
+    span {
+      color: #dddddd;
+    }
+  }
+
+  .syfy-error-text {
+    width: 512px;
+    font-family: $book;
+    font-weight: normal;
+    font-size: 16px;
+    color: #999999;
+    margin: 0 auto;
+  }
+
+  .syfy-error-links {
+    color: white;
+    line-height: 12px;
+    font-family: $regular;
+    font-weight: normal;
+    font-size: 16px;
+    text-transform: none;
+    margin-top: 50px;
+
+    a {
+      display: inline-block;
+      color: white;
+      text-decoration: none;
+
+      &.button {
+        @include chiller_button;
+      }
+    }
+  }
+}
+
+.pane-syfy-press-page-unavailable {
+  .syfy-error-title,
+  .syfy-error-text {
+    color: white;
+  }
+  .syfy-error-title {
+    span {
+      color: white;
+    }
+  }
+}
+
+.page-user-reset {
+  #user-pass-reset {
+    text-align: center;
+    margin: 0 auto;
+
+    p {
+      color: #999999;
+      margin: 0;
+    }
+
+    .form-actions {
+      padding-top: 20px;
+
+      .form-submit {
+        font-family: $regular;
+        font-weight: normal;
+        text-transform: uppercase;
+        background: #522374;
+        color: #fff;
+        border: 0;
+        padding: 16px 27px;
+      }
+    }
+  }
+}
+
+.not-logged-in,
+.page-user-password {
+  .pane-user-login,
+  .pane-syfy-press-password-recovery {
+    text-align: center;
+
+    form {
+      width: 385px;
+      margin: 0 auto;
+
+
+      .form-item label,
+      div > p {
+        font-family: $book;
+        font-weight: normal;
+        color: #999999;
+      }
+
+      .form-item label {
+        text-transform: uppercase;
+        color: #fff;
+      }
+
+      .form-item input {
+        font-family: $book;
+        font-size: 20px;
+        color: $gray_font_content;
+        display: block;
+        padding: 15px 15px 10px 15px;
+        width: 100%;
+      }
+    }
+    .form-actions {
+      margin-top: 20px;
+      @include chiller_button;
+      @include translateX(-39px);
+
+      .form-submit {
+        @include appearance(initial);
+        padding: 0;
+        font-family: $medium;
+        font-size: 16px;
+        text-transform: none;
+        border: 0 none;
+        background: transparent;
+        color: $white;
+        text-shadow: 0px -1px 1px #333;
+      }
+      .hide-submit-text {
+        display: inline-block;
+      }
+    }
+  }
+
+  .pane-syfy-press-password-recovery .form-item-name {
+    text-align: left;
+
+    .description {
+      font-family: $regular;
+      font-weight: normal;
+      text-align: center;
+      color: #999999;
+      margin-top: 15px;
+    }
+  }
+}
